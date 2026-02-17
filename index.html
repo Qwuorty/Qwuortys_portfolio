@@ -3,10 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Maxim Qwuorty | Fullstack Developer</title>
+    <title>qwuorty | Fullstack Developer</title>
     <meta
       name="description"
-      content="Portfolio of Maxim Qwuorty, fullstack developer focused on design-driven digital products, e-commerce and automations."
+      content="Portfolio of qwuorty: design plus fullstack delivery for e-commerce, culture and automation products."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -20,102 +20,101 @@
     <div class="preloader" id="preloader" aria-hidden="true">
       <div class="preloader__inner">
         <p class="preloader__label" data-i18n="preloader.label">Loading portfolio</p>
-        <p class="preloader__percent" id="preloaderPercent">0%</p>
+        <p class="preloader__value" id="preloaderValue">0%</p>
         <div class="preloader__track"><div class="preloader__bar" id="preloaderBar"></div></div>
       </div>
     </div>
 
     <div class="page-transition" id="pageTransition" aria-hidden="true"></div>
-    <div class="grain" aria-hidden="true"></div>
-    <div class="cursor" aria-hidden="true"></div>
-
-    <header class="site-header">
-      <a class="brand" href="#home">MAXIM QWUORTY</a>
-      <nav class="nav">
+    <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
+      <div class="menu-overlay__top">
+        <p class="menu-overlay__brand">QWUORTY</p>
+        <button id="menuClose" class="menu-close" type="button" data-i18n="menu.close">Close</button>
+      </div>
+      <nav class="menu-overlay__nav">
         <a href="#home" data-nav-link data-i18n="nav.home">Home</a>
         <a href="#work" data-nav-link data-i18n="nav.work">Work</a>
         <a href="#about" data-nav-link data-i18n="nav.about">About</a>
         <a href="#contact" data-nav-link data-i18n="nav.contact">Contact</a>
       </nav>
-      <button id="langSwitch" class="lang-switch" type="button" aria-label="Switch language">EN</button>
+      <div class="menu-overlay__meta">
+        <a href="mailto:qwuorty@bk.ru">qwuorty@bk.ru</a>
+        <a href="https://t.me/qwuorty" target="_blank" rel="noreferrer">@qwuorty</a>
+      </div>
+    </div>
+
+    <div class="cursor" aria-hidden="true"></div>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="site-header">
+      <a class="brand" href="#home" data-nav-link>QWUORTY</a>
+      <div class="header-actions">
+        <button id="langSwitch" class="lang-switch" type="button" aria-label="Switch language">EN</button>
+        <button id="menuToggle" class="menu-toggle" type="button" data-i18n="menu.open">Menu</button>
+      </div>
     </header>
 
     <main>
       <section class="hero" id="home">
-        <p class="hero__kicker" data-reveal data-i18n="hero.kicker">Design + Fullstack</p>
+        <p class="hero__kicker" data-reveal data-i18n="hero.kicker">Design plus Fullstack</p>
         <h1 class="hero__title" data-reveal>
-          <span data-i18n="hero.line1">I build digital products</span>
+          <span data-i18n="hero.line1">I build websites</span>
           <span data-i18n="hero.line2">that feel premium,</span>
-          <span data-i18n="hero.line3">convert and scale.</span>
+          <span data-i18n="hero.line3">perform and convert.</span>
         </h1>
         <p class="hero__text" data-reveal data-i18n="hero.text">
-          I design and develop websites, e-commerce platforms, museum experiences,
-          mini apps and automation systems end-to-end.
+          End-to-end delivery: concept, interface, frontend, backend, integrations, release.
         </p>
         <div class="hero__actions" data-reveal>
-          <a class="btn btn--solid magnetic" href="#work" data-nav-link data-i18n="hero.cta1">View projects</a>
-          <a class="btn btn--ghost magnetic" href="#contact" data-nav-link data-i18n="hero.cta2">Start project</a>
+          <a class="btn btn--solid magnetic" href="#work" data-nav-link data-i18n="hero.cta.work">View projects</a>
+          <a class="btn btn--ghost magnetic" href="#contact" data-nav-link data-i18n="hero.cta.contact">Start project</a>
         </div>
-        <ul class="hero__stats" data-reveal>
-          <li>
-            <strong data-counter="7">0</strong>
-            <span data-i18n="stats.websites">Major web projects</span>
-          </li>
-          <li>
-            <strong data-counter="5">0</strong>
-            <span data-i18n="stats.bots">Telegram bots</span>
-          </li>
-          <li>
-            <strong data-counter="1">0</strong>
-            <span data-i18n="stats.fullcycle">Full cycle: design + fullstack</span>
-          </li>
-        </ul>
       </section>
 
       <section class="work" id="work">
         <div class="section-head" data-reveal>
           <p class="section-kicker" data-i18n="work.kicker">Selected Work</p>
-          <h2 data-i18n="work.title">Websites, stores and digital platforms</h2>
+          <h2 data-i18n="work.title">Projects</h2>
         </div>
-        <div class="project-list" id="projectList"></div>
+        <div class="work-list" id="workList"></div>
+        <div class="work-hover-preview" id="workHoverPreview" aria-hidden="true">
+          <img id="workHoverImage" alt="Project preview" />
+          <p id="workHoverTitle">Project</p>
+        </div>
       </section>
 
       <section class="about" id="about">
         <div class="section-head" data-reveal>
-          <p class="section-kicker" data-i18n="about.kicker">What I Do</p>
-          <h2 data-i18n="about.title">Fullstack delivery with product mindset</h2>
+          <p class="section-kicker" data-i18n="about.kicker">About</p>
+          <h2 data-i18n="about.title">Services and automation</h2>
         </div>
-
         <div class="about-grid">
-          <article class="about-block" data-reveal>
-            <h3 data-i18n="about.serviceTitle">Core services</h3>
-            <ul class="about-list" id="serviceList"></ul>
+          <article class="about-card" data-reveal>
+            <h3 data-i18n="about.core">Core services</h3>
+            <ul id="coreList" class="about-list"></ul>
           </article>
-
-          <article class="about-block" data-reveal>
-            <h3 data-i18n="about.automationTitle">Automations and bots</h3>
-            <ul class="about-list" id="automationList"></ul>
+          <article class="about-card" data-reveal>
+            <h3 data-i18n="about.auto">Automation and bots</h3>
+            <ul id="autoList" class="about-list"></ul>
           </article>
         </div>
       </section>
 
       <section class="contact" id="contact">
-        <div class="contact__inner" data-reveal>
+        <div class="contact-inner" data-reveal>
           <p class="section-kicker" data-i18n="contact.kicker">Contact</p>
-          <h2 data-i18n="contact.title">Need design + fullstack in one hands?</h2>
-          <p data-i18n="contact.text">
-            Send your task and I will return architecture, timeline and implementation plan.
-          </p>
-          <div class="contact__actions">
+          <h2 data-i18n="contact.title">Need design and development in one hands?</h2>
+          <p data-i18n="contact.text">Write me in Telegram or email and I will send implementation plan.</p>
+          <div class="contact-actions">
             <a class="btn btn--solid magnetic" href="https://t.me/qwuorty" target="_blank" rel="noreferrer">@qwuorty</a>
-            <a class="btn btn--ghost magnetic" href="https://t.me/unicorn_go_bot" target="_blank" rel="noreferrer">@unicorn_go_bot</a>
+            <a class="btn btn--ghost magnetic" href="mailto:qwuorty@bk.ru">qwuorty@bk.ru</a>
           </div>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <p>&copy; <span id="year"></span> Maxim qwuorty</p>
+      <p>&copy; <span id="year"></span> qwuorty</p>
       <a href="#home" data-nav-link data-i18n="footer.top">Back to top</a>
     </footer>
 

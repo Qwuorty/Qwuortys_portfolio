@@ -2,6 +2,12 @@
 
 Dennis-inspired portfolio skeleton for a Fullstack Developer.
 
+## Current behavior
+
+- Default locale is `ru`.
+- Locale path is URL-based: `/ru` and `/en`.
+- Project previews are loaded from `work/<project-slug>/cover.jpg`.
+
 ## Local run
 
 ```bash

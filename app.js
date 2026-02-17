@@ -1,264 +1,183 @@
 const preloader = document.getElementById('preloader');
 const preloaderBar = document.getElementById('preloaderBar');
-const preloaderPercent = document.getElementById('preloaderPercent');
+const preloaderValue = document.getElementById('preloaderValue');
 const pageTransition = document.getElementById('pageTransition');
-const cursor = document.querySelector('.cursor');
+const menuOverlay = document.getElementById('menuOverlay');
+const menuToggle = document.getElementById('menuToggle');
+const menuClose = document.getElementById('menuClose');
 const langSwitch = document.getElementById('langSwitch');
-const projectList = document.getElementById('projectList');
-const serviceList = document.getElementById('serviceList');
-const automationList = document.getElementById('automationList');
+const workList = document.getElementById('workList');
+const coreList = document.getElementById('coreList');
+const autoList = document.getElementById('autoList');
+const cursor = document.querySelector('.cursor');
+const workHoverPreview = document.getElementById('workHoverPreview');
+const workHoverImage = document.getElementById('workHoverImage');
+const workHoverTitle = document.getElementById('workHoverTitle');
 
 const SUPPORTED_LANGUAGES = ['ru', 'en'];
 const DEFAULT_LANGUAGE = 'ru';
 const LANGUAGE_PATH_RE = /^\/(ru|en)(?=\/|$)/;
 
-const DATA = {
+const UI = {
   ru: {
     metaTitle: '\u041c\u0430\u043a\u0441\u0438\u043c qwuorty | Fullstack \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a',
     metaDescription:
-      '\u041f\u043e\u0440\u0442\u0444\u043e\u043b\u0438\u043e \u041c\u0430\u043a\u0441\u0438\u043c\u0430 qwuorty: design + fullstack, e-commerce, \u043c\u0438\u043d\u0438-\u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u044f \u0438 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044f \u0431\u0438\u0437\u043d\u0435\u0441-\u043f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0432.',
-    ui: {
+      '\u041f\u043e\u0440\u0442\u0444\u043e\u043b\u0438\u043e qwuorty: design + fullstack \u0434\u043b\u044f e-commerce, \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u044b\u0445 \u043f\u0440\u043e\u0435\u043a\u0442\u043e\u0432 \u0438 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u0439.',
+    strings: {
       'preloader.label': '\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u043f\u043e\u0440\u0442\u0444\u043e\u043b\u0438\u043e',
+      'menu.open': '\u041c\u0435\u043d\u044e',
+      'menu.close': '\u0417\u0430\u043a\u0440\u044b\u0442\u044c',
       'nav.home': '\u0413\u043b\u0430\u0432\u043d\u0430\u044f',
       'nav.work': '\u041a\u0435\u0439\u0441\u044b',
       'nav.about': '\u041e\u0431\u043e \u043c\u043d\u0435',
       'nav.contact': '\u041a\u043e\u043d\u0442\u0430\u043a\u0442',
-      'hero.kicker': 'Design + Fullstack',
-      'hero.line1': '\u0414\u0435\u043b\u0430\u044e \u0446\u0438\u0444\u0440\u043e\u0432\u044b\u0435 \u043f\u0440\u043e\u0434\u0443\u043a\u0442\u044b',
+      'hero.kicker': 'Design plus Fullstack',
+      'hero.line1': '\u0421\u043e\u0437\u0434\u0430\u044e \u0441\u0430\u0439\u0442\u044b \u0438 \u0441\u0435\u0440\u0432\u0438\u0441\u044b',
       'hero.line2': '\u0441 \u043f\u0440\u0435\u043c\u0438\u0443\u043c-\u043f\u043e\u0434\u0430\u0447\u0435\u0439,',
-      'hero.line3': '\u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u043f\u0440\u043e\u0434\u0430\u044e\u0442 \u0438 \u043c\u0430\u0441\u0448\u0442\u0430\u0431\u0438\u0440\u0443\u044e\u0442\u0441\u044f.',
+      'hero.line3': '\u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u0431\u044b\u0441\u0442\u0440\u044b \u0438 \u044d\u0444\u0444\u0435\u043a\u0442\u0438\u0432\u043d\u044b.',
       'hero.text':
-        '\u041f\u0440\u043e\u0435\u043a\u0442\u0438\u0440\u0443\u044e \u0438 \u0440\u0430\u0437\u0440\u0430\u0431\u0430\u0442\u044b\u0432\u0430\u044e \u0441\u0430\u0439\u0442\u044b, \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442-\u043c\u0430\u0433\u0430\u0437\u0438\u043d\u044b, \u043c\u0443\u0437\u0435\u0439\u043d\u044b\u0435 \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u044b, Telegram Mini Apps \u0438 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438 \u043f\u043e\u0434 \u043a\u043b\u044e\u0447.',
-      'hero.cta1': '\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442\u044b',
-      'hero.cta2': '\u041d\u0430\u0447\u0430\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442',
-      'stats.websites': '\u041a\u0440\u0443\u043f\u043d\u044b\u0445 web-\u043f\u0440\u043e\u0435\u043a\u0442\u043e\u0432',
-      'stats.bots': 'Telegram-\u0431\u043e\u0442\u043e\u0432',
-      'stats.fullcycle': '\u041f\u043e\u043b\u043d\u044b\u0439 \u0446\u0438\u043a\u043b: \u0434\u0438\u0437\u0430\u0439\u043d + fullstack',
+        '\u041f\u043e\u043b\u043d\u044b\u0439 \u0446\u0438\u043a\u043b: \u043a\u043e\u043d\u0446\u0435\u043f\u0442, UI/UX, frontend, backend, \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438 \u0438 \u0440\u0435\u043b\u0438\u0437.',
+      'hero.cta.work': '\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442\u044b',
+      'hero.cta.contact': '\u041d\u0430\u0447\u0430\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442',
       'work.kicker': '\u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435 \u043a\u0435\u0439\u0441\u044b',
-      'work.title': '\u0421\u0430\u0439\u0442\u044b, \u043c\u0430\u0433\u0430\u0437\u0438\u043d\u044b \u0438 \u0446\u0438\u0444\u0440\u043e\u0432\u044b\u0435 \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u044b',
-      'about.kicker': '\u0427\u0442\u043e \u044f \u0434\u0435\u043b\u0430\u044e',
-      'about.title': 'Fullstack delivery \u0441 \u043f\u0440\u043e\u0434\u0443\u043a\u0442\u043e\u0432\u044b\u043c \u043c\u044b\u0448\u043b\u0435\u043d\u0438\u0435\u043c',
-      'about.serviceTitle': '\u041a\u043b\u044e\u0447\u0435\u0432\u044b\u0435 \u0443\u0441\u043b\u0443\u0433\u0438',
-      'about.automationTitle': '\u0410\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044f \u0438 \u0431\u043e\u0442\u044b',
+      'work.title': '\u041f\u0440\u043e\u0435\u043a\u0442\u044b',
+      'about.kicker': '\u041e\u0431\u043e \u043c\u043d\u0435',
+      'about.title': '\u0423\u0441\u043b\u0443\u0433\u0438 \u0438 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044f',
+      'about.core': '\u041a\u043b\u044e\u0447\u0435\u0432\u044b\u0435 \u0443\u0441\u043b\u0443\u0433\u0438',
+      'about.auto': '\u0411\u043e\u0442\u044b \u0438 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438',
       'contact.kicker': '\u041a\u043e\u043d\u0442\u0430\u043a\u0442',
-      'contact.title': '\u041d\u0443\u0436\u0435\u043d \u0434\u0438\u0437\u0430\u0439\u043d + fullstack \u0432 \u043e\u0434\u043d\u0438\u0445 \u0440\u0443\u043a\u0430\u0445?',
+      'contact.title': '\u041d\u0443\u0436\u0435\u043d \u0434\u0438\u0437\u0430\u0439\u043d + \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u043a\u0430 \u0432 \u043e\u0434\u043d\u0438\u0445 \u0440\u0443\u043a\u0430\u0445?',
       'contact.text':
-        '\u041d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u0437\u0430\u0434\u0430\u0447\u0443, \u0438 \u044f \u0432\u0435\u0440\u043d\u0443 \u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0443, \u0441\u0440\u043e\u043a\u0438 \u0438 \u043f\u043b\u0430\u043d \u0440\u0435\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u0438.',
-      'footer.top': '\u041d\u0430\u0432\u0435\u0440\u0445',
-      resultLabel: '\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442'
-    },
-    projects: [
-      {
-        type: '\u041a\u043d\u0438\u0436\u043d\u044b\u0439 e-commerce',
-        title: '\u041d\u0435\u0444\u043e\u0440\u043c\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u044c',
-        url: 'https://neformalnost.ru/',
-        description:
-          '\u0421\u043f\u0440\u043e\u0435\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u043b \u0438 \u0440\u0435\u0430\u043b\u0438\u0437\u043e\u0432\u0430\u043b \u043f\u043e\u043b\u043d\u044b\u0439 digital-\u043a\u043e\u043d\u0442\u0443\u0440 \u043c\u0430\u0433\u0430\u0437\u0438\u043d\u0430: \u043a\u0430\u0442\u0430\u043b\u043e\u0433, \u043f\u043e\u0438\u0441\u043a, \u043a\u043e\u0440\u0437\u0438\u043d\u0430, CMS, \u043b\u043e\u0433\u0438\u0441\u0442\u0438\u043a\u0430.',
-        result: 'LCP ~1.7s, \u0440\u043e\u0441\u0442 \u043a\u043e\u043d\u0432\u0435\u0440\u0441\u0438\u0438 \u0447\u0435\u043a\u0430\u0443\u0442\u0430 +27%',
-        stack: ['Next.js', 'Node.js', 'PostgreSQL', 'Docker']
-      },
-      {
-        type: 'Brand e-commerce',
-        title: 'Kitchen Ceremony',
-        url: 'https://kitchenceremony.com/',
-        description:
-          '\u0421\u043e\u0431\u0440\u0430\u043b \u0431\u0440\u0435\u043d\u0434-\u043e\u043f\u044b\u0442 \u0441 \u0430\u043a\u0446\u0435\u043d\u0442\u043e\u043c \u043d\u0430 \u044d\u0441\u0442\u0435\u0442\u0438\u043a\u0443 \u0438 \u043a\u043e\u043d\u0432\u0435\u0440\u0441\u0438\u044e: \u043f\u0440\u0435\u0437\u0435\u043d\u0442\u0430\u0446\u0438\u044f \u043f\u0440\u043e\u0434\u0443\u043a\u0442\u0430, \u043a\u0430\u043c\u043f\u0430\u043d\u0438\u0439\u043d\u044b\u0435 \u043f\u043e\u0441\u0430\u0434\u043e\u0447\u043d\u044b\u0435, CMS.',
-        result: '\u041a\u0430\u043c\u043f\u0430\u043d\u0438\u044f \u0441 Ultima \u042f\u043d\u0434\u0435\u043a\u0441 \u0415\u0434\u0430, \u0440\u043e\u0441\u0442 repeat sessions +34%',
-        stack: ['Next.js', 'Headless CMS', 'Node API', 'Vercel']
-      },
-      {
-        type: '\u041c\u0443\u0437\u0435\u0439\u043d\u0430\u044f \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u0430',
-        title: '\u041c\u0443\u0437\u0435\u0439 AZ',
-        url: 'https://museum-az.com/',
-        description:
-          '\u0421\u0434\u0435\u043b\u0430\u043b \u0438\u043c\u0438\u0434\u0436\u0435\u0432\u044b\u0439 \u0438 \u0444\u0443\u043d\u043a\u0446\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u044b\u0439 \u0441\u0430\u0439\u0442 \u043c\u0443\u0437\u0435\u044f: \u0430\u0444\u0438\u0448\u0430, \u0432\u044b\u0441\u0442\u0430\u0432\u043a\u0438, \u043d\u0430\u0432\u0438\u0433\u0430\u0446\u0438\u044f \u043f\u043e \u0441\u043e\u0431\u044b\u0442\u0438\u044f\u043c, \u0440\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u0443\u0435\u043c\u044b\u0439 \u043a\u043e\u043d\u0442\u0435\u043d\u0442.',
-        result: '\u0420\u043e\u0441\u0442 online-\u0432\u043e\u0432\u043b\u0435\u0447\u0435\u043d\u043d\u043e\u0441\u0442\u0438 +41% \u043f\u043e \u0441\u0435\u0437\u043e\u043d\u0443',
-        stack: ['Nuxt', 'Node.js', 'Strapi', 'PostgreSQL']
-      },
-      {
-        type: '\u041e\u0431\u0443\u0432\u043d\u043e\u0439 marketplace',
-        title: 'GOAT',
-        url: 'https://www.goat.com/',
-        description:
-          '\u0412\u044b\u0441\u0442\u0440\u043e\u0438\u043b \u043f\u0430\u0442\u0442\u0435\u0440\u043d\u044b \u0434\u043b\u044f \u0432\u044b\u0441\u043e\u043a\u043e\u043d\u0430\u0433\u0440\u0443\u0436\u0435\u043d\u043d\u043e\u0439 \u0432\u0438\u0442\u0440\u0438\u043d\u044b: \u043a\u0430\u0442\u0430\u043b\u043e\u0433, \u043a\u0430\u0440\u0442\u043e\u0447\u043a\u0438, \u043f\u0443\u0442\u0438 \u0434\u043e \u043f\u043e\u043a\u0443\u043f\u043a\u0438.',
-        result: '\u0421\u0442\u0430\u0431\u0438\u043b\u044c\u043d\u044b\u0435 95+ \u043f\u043e Lighthouse \u043d\u0430 \u043a\u043b\u044e\u0447\u0435\u0432\u044b\u0445 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0430\u0445',
-        stack: ['React', 'Node.js', 'GraphQL', 'Redis']
-      },
-      {
-        type: '\u0421\u0430\u0439\u0442\u044b \u0440\u0435\u0441\u0442\u043e\u0440\u0430\u043d\u043e\u0432',
-        title: 'Flaner Moscow',
-        url: 'https://flanermoscow.ru/',
-        description:
-          '\u0421\u0434\u0435\u043b\u0430\u043b \u043f\u0440\u0435\u043c\u0438\u0443\u043c-\u043f\u043e\u0434\u0430\u0447\u0443 \u0434\u043b\u044f \u0434\u0432\u0443\u0445 \u043a\u043e\u043d\u0446\u0435\u043f\u0442\u043e\u0432 \u0440\u0435\u0441\u0442\u043e\u0440\u0430\u043d\u043e\u0432: \u0440\u0435\u0437\u0435\u0440\u0432\u044b, \u043c\u0435\u043d\u044e, \u0438\u0432\u0435\u043d\u0442\u044b, \u043c\u043e\u0431\u0438\u043b\u044c\u043d\u044b\u0439 UX.',
-        result: '\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u0435\u043b\u044c \u0437\u0430\u044f\u0432\u043e\u043a \u043d\u0430 \u0431\u0440\u043e\u043d\u044c +33% \u043f\u043e\u0441\u043b\u0435 \u0437\u0430\u043f\u0443\u0441\u043a\u0430',
-        stack: ['Next.js', 'Node.js', 'PostgreSQL', 'Nginx']
-      },
-      {
-        type: '\u041e\u0431\u0443\u0432\u043d\u043e\u0439 \u043c\u0430\u0433\u0430\u0437\u0438\u043d + Mini App',
-        title: 'Unicorn GO',
-        url: 'https://unicorngo.ru',
-        description:
-          '\u0417\u0430\u043f\u0443\u0441\u0442\u0438\u043b \u0441\u0430\u0439\u0442 \u043c\u0430\u0433\u0430\u0437\u0438\u043d\u0430 \u0438 Telegram Mini App, \u0441\u0432\u044f\u0437\u0430\u0432 \u043a\u0430\u0442\u0430\u043b\u043e\u0433, \u0437\u0430\u043a\u0430\u0437\u044b \u0438 \u043e\u043f\u043b\u0430\u0442\u0443 \u0432 \u0435\u0434\u0438\u043d\u0443\u044e \u0432\u043e\u0440\u043e\u043d\u043a\u0443.',
-        result: '\u041f\u0443\u0442\u044c \u0434\u043e \u0437\u0430\u043a\u0430\u0437\u0430 \u0432 Mini App < 40 \u0441\u0435\u043a',
-        stack: ['React', 'Telegram WebApp', 'Go', 'PostgreSQL']
-      },
-      {
-        type: 'CRM \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044f',
-        title: 'AMOcrm x Platrum',
-        url: '#about',
-        description:
-          '\u0420\u0435\u0430\u043b\u0438\u0437\u043e\u0432\u0430\u043b \u043f\u0435\u0440\u0435\u0434\u0430\u0447\u0443 \u043f\u0440\u044f\u043c\u044b\u0445 \u0440\u0430\u0441\u0445\u043e\u0434\u043e\u0432 \u0438\u0437 \u0441\u0434\u0435\u043b\u043a\u0438 AMOcrm \u0432 \u043c\u043e\u0434\u0443\u043b\u044c \u0424\u0438\u043d\u0430\u043d\u0441\u044b Platrum \u0447\u0435\u0440\u0435\u0437 API + webhooks.',
-        result: '\u0410\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044f \u043e\u0442\u0447\u0435\u0442\u043d\u043e\u0441\u0442\u0438, -6 \u0447\u0430\u0441\u043e\u0432 \u0440\u0443\u0447\u043d\u043e\u0439 \u0440\u0430\u0431\u043e\u0442\u044b \u0432 \u043d\u0435\u0434\u0435\u043b\u044e',
-        stack: ['AMOcrm API', 'Platrum API', 'Webhooks', 'Node.js']
-      }
-    ],
-    services: [
-      '\u041f\u043e\u043b\u043d\u044b\u0439 \u0446\u0438\u043a\u043b: \u0438\u0441\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u0435, UI/UX, frontend, backend, \u0440\u0435\u043b\u0438\u0437.',
-      '\u0421\u0438\u0441\u0442\u0435\u043c\u044b \u0434\u043b\u044f e-commerce: \u043a\u0430\u0442\u0430\u043b\u043e\u0433, \u043a\u043e\u0440\u0437\u0438\u043d\u0430, \u043e\u043f\u043b\u0430\u0442\u044b, CRM-\u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438.',
-      '\u0418\u043c\u0438\u0434\u0436\u0435\u0432\u044b\u0435 \u0441\u0430\u0439\u0442\u044b \u0441\u043e \u0441\u0438\u043b\u044c\u043d\u043e\u0439 motion-\u043f\u043e\u0434\u0430\u0447\u0435\u0439 \u0438 \u043f\u0440\u043e\u0434\u0443\u043c\u0430\u043d\u043d\u044b\u043c UX.',
-      'Telegram Mini Apps \u0438 \u0431\u043e\u0442\u044b \u043f\u043e\u0434 \u0437\u0430\u043a\u0430\u0437\u044b, \u043f\u043e\u0434\u043f\u0438\u0441\u043a\u0438, \u043b\u043e\u0433\u0438\u0441\u0442\u0438\u043a\u0443.',
-      '\u041e\u043f\u0442\u0438\u043c\u0438\u0437\u0430\u0446\u0438\u044f \u0441\u043a\u043e\u0440\u043e\u0441\u0442\u0438, Core Web Vitals \u0438 \u0441\u0442\u0430\u0431\u0438\u043b\u044c\u043d\u043e\u0441\u0442\u0438 \u043f\u0440\u043e\u0434\u0430.'
-    ],
-    automations: [
-      'AMOcrm -> Platrum: \u0430\u0432\u0442\u043e\u043f\u0435\u0440\u0435\u0434\u0430\u0447\u0430 \u0440\u0430\u0441\u0445\u043e\u0434\u043e\u0432 (\u0437\u0430\u0440\u043f\u043b\u0430\u0442\u0430, \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044b, \u0413\u0421\u041c, \u043f\u0440\u043e\u0447\u0438\u0435).',
-      '@Dodologistic_bot: \u0432\u044b\u043a\u0443\u043f \u0438 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430 \u0442\u043e\u0432\u0430\u0440\u043e\u0432 \u0438\u0437 POIZON.',
-      '@ClevVPN_bot: \u043f\u043e\u0434\u043f\u0438\u0441\u043a\u0430 \u0438 \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 VPN \u0434\u043e\u0441\u0442\u0443\u043f\u043e\u043c.',
-      '@NextGenVPN_bot: \u0431\u0435\u0437\u043b\u0438\u043c\u0438\u0442\u043d\u044b\u0439 VPN \u0441 \u0430\u0432\u0442\u043e\u0432\u044b\u0434\u0430\u0447\u0435\u0439 \u043a\u043b\u044e\u0447\u0435\u0439.',
-      '@monoflore_bot + t.me/monoflore: \u0446\u0432\u0435\u0442\u044b \u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u043e\u0439 \u043f\u043e \u041c\u043e\u0441\u043a\u0432\u0435.'
-    ]
+        '\u041d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u0432 Telegram \u0438\u043b\u0438 \u043d\u0430 email, \u0438 \u044f \u0432\u0435\u0440\u043d\u0443 \u043f\u043b\u0430\u043d \u0440\u0435\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u0438.',
+      'footer.top': '\u041d\u0430\u0432\u0435\u0440\u0445'
+    }
   },
   en: {
-    metaTitle: 'Maxim qwuorty | Fullstack Developer',
+    metaTitle: 'qwuorty | Fullstack Developer',
     metaDescription:
-      'Portfolio of Maxim qwuorty: design + fullstack delivery for e-commerce, cultural projects, Telegram Mini Apps and automations.',
-    ui: {
+      'Portfolio of qwuorty: design plus fullstack delivery for e-commerce, cultural products and automation systems.',
+    strings: {
       'preloader.label': 'Loading portfolio',
+      'menu.open': 'Menu',
+      'menu.close': 'Close',
       'nav.home': 'Home',
       'nav.work': 'Work',
       'nav.about': 'About',
       'nav.contact': 'Contact',
-      'hero.kicker': 'Design + Fullstack',
-      'hero.line1': 'I build digital products',
+      'hero.kicker': 'Design plus Fullstack',
+      'hero.line1': 'I build websites',
       'hero.line2': 'that feel premium,',
-      'hero.line3': 'convert and scale.',
-      'hero.text':
-        'I design and develop websites, stores, museum platforms, Telegram Mini Apps and business automations end-to-end.',
-      'hero.cta1': 'View projects',
-      'hero.cta2': 'Start project',
-      'stats.websites': 'Major web projects',
-      'stats.bots': 'Telegram bots',
-      'stats.fullcycle': 'Full cycle: design + fullstack',
+      'hero.line3': 'perform and convert.',
+      'hero.text': 'End-to-end delivery: concept, interface, frontend, backend, integrations, release.',
+      'hero.cta.work': 'View projects',
+      'hero.cta.contact': 'Start project',
       'work.kicker': 'Selected Work',
-      'work.title': 'Websites, stores and digital platforms',
-      'about.kicker': 'What I Do',
-      'about.title': 'Fullstack delivery with product mindset',
-      'about.serviceTitle': 'Core services',
-      'about.automationTitle': 'Automations and bots',
+      'work.title': 'Projects',
+      'about.kicker': 'About',
+      'about.title': 'Services and automation',
+      'about.core': 'Core services',
+      'about.auto': 'Automation and bots',
       'contact.kicker': 'Contact',
-      'contact.title': 'Need design + fullstack in one hands?',
-      'contact.text': 'Send your scope and I will return architecture, timeline and implementation plan.',
-      'footer.top': 'Back to top',
-      resultLabel: 'Result'
-    },
-    projects: [
-      {
-        type: 'Bookstore e-commerce',
-        title: 'Neformalnost',
-        url: 'https://neformalnost.ru/',
-        description:
-          'Designed and built the full digital stack: catalog, search, checkout, CMS and logistics workflow.',
-        result: 'LCP ~1.7s, checkout conversion growth +27%',
-        stack: ['Next.js', 'Node.js', 'PostgreSQL', 'Docker']
-      },
-      {
-        type: 'Brand e-commerce',
-        title: 'Kitchen Ceremony',
-        url: 'https://kitchenceremony.com/',
-        description:
-          'Built a premium brand experience with campaign landing flows, product storytelling and editable content.',
-        result: 'Ultima Yandex Food campaign launch, repeat sessions +34%',
-        stack: ['Next.js', 'Headless CMS', 'Node API', 'Vercel']
-      },
-      {
-        type: 'Museum platform',
-        title: 'Museum AZ',
-        url: 'https://museum-az.com/',
-        description:
-          'Delivered a modern museum website: exhibitions, events, navigation and rich content editing tools.',
-        result: 'Online engagement growth +41% during season campaigns',
-        stack: ['Nuxt', 'Node.js', 'Strapi', 'PostgreSQL']
-      },
-      {
-        type: 'Sneaker marketplace',
-        title: 'GOAT',
-        url: 'https://www.goat.com/',
-        description:
-          'Implemented high-load storefront patterns for catalog pages, product cards and purchase funnels.',
-        result: 'Stable Lighthouse 95+ on key storefront pages',
-        stack: ['React', 'Node.js', 'GraphQL', 'Redis']
-      },
-      {
-        type: 'Restaurant websites',
-        title: 'Flaner Moscow',
-        url: 'https://flanermoscow.ru/',
-        description:
-          'Created premium web presence for two restaurant concepts with booking flow, menu and event pages.',
-        result: 'Reservation requests growth +33% after relaunch',
-        stack: ['Next.js', 'Node.js', 'PostgreSQL', 'Nginx']
-      },
-      {
-        type: 'Store + Mini App',
-        title: 'Unicorn GO',
-        url: 'https://unicorngo.ru',
-        description:
-          'Launched e-commerce website and Telegram Mini App with connected catalog, checkout and payment flow.',
-        result: 'Order path in Mini App under 40 seconds',
-        stack: ['React', 'Telegram WebApp', 'Go', 'PostgreSQL']
-      },
-      {
-        type: 'CRM integration',
-        title: 'AMOcrm x Platrum',
-        url: '#about',
-        description:
-          'Implemented webhook + API integration to push direct expenses from AMOcrm deals to Platrum Finance module.',
-        result: 'Automated reporting, around 6 hours saved weekly',
-        stack: ['AMOcrm API', 'Platrum API', 'Webhooks', 'Node.js']
-      }
-    ],
-    services: [
-      'Full-cycle delivery: discovery, UI/UX, frontend, backend and release.',
-      'E-commerce systems: catalog, checkout, payments and CRM integrations.',
-      'Brand websites with strong motion language and conversion-ready UX.',
-      'Telegram Mini Apps and bots for sales, subscriptions and logistics.',
-      'Performance optimization, Core Web Vitals and production stability.'
-    ],
-    automations: [
-      'AMOcrm -> Platrum: automated transfer of direct expense fields.',
-      '@Dodologistic_bot: POIZON sourcing and delivery automation.',
-      '@ClevVPN_bot: subscription and VPN access management.',
-      '@NextGenVPN_bot: unlimited VPN access provisioning flow.',
-      '@monoflore_bot + t.me/monoflore: flower delivery flow for Moscow.'
-    ]
+      'contact.title': 'Need design and development in one hands?',
+      'contact.text': 'Write me in Telegram or email and I will send implementation plan.',
+      'footer.top': 'Back to top'
+    }
   }
 };
 
+const PROJECTS = [
+  {
+    slug: 'neformalnost',
+    url: 'https://neformalnost.ru/',
+    title: { ru: '\u041d\u0435\u0444\u043e\u0440\u043c\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u044c', en: 'Neformalnost' },
+    type: { ru: '\u041a\u043d\u0438\u0436\u043d\u044b\u0439 e-commerce', en: 'Bookstore e-commerce' }
+  },
+  {
+    slug: 'kitchen-ceremony',
+    url: 'https://kitchenceremony.com/',
+    title: { ru: 'Kitchen Ceremony', en: 'Kitchen Ceremony' },
+    type: { ru: '\u0411\u0440\u0435\u043d\u0434\u043e\u0432\u044b\u0439 e-commerce', en: 'Brand e-commerce' }
+  },
+  {
+    slug: 'museum-az',
+    url: 'https://museum-az.com/',
+    title: { ru: '\u041c\u0443\u0437\u0435\u0439 AZ', en: 'Museum AZ' },
+    type: { ru: '\u041c\u0443\u0437\u0435\u0439\u043d\u0430\u044f \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u0430', en: 'Museum platform' }
+  },
+  {
+    slug: 'goat',
+    url: 'https://www.goat.com/',
+    title: { ru: 'GOAT', en: 'GOAT' },
+    type: { ru: '\u041e\u0431\u0443\u0432\u043d\u043e\u0439 marketplace', en: 'Sneaker marketplace' }
+  },
+  {
+    slug: 'flaner-moscow',
+    url: 'https://flanermoscow.ru/',
+    title: { ru: 'Flaner Moscow', en: 'Flaner Moscow' },
+    type: { ru: '\u0421\u0430\u0439\u0442\u044b \u0440\u0435\u0441\u0442\u043e\u0440\u0430\u043d\u043e\u0432', en: 'Restaurant websites' }
+  },
+  {
+    slug: 'unicorngo',
+    url: 'https://unicorngo.ru',
+    title: { ru: 'Unicorn GO', en: 'Unicorn GO' },
+    type: { ru: '\u041c\u0430\u0433\u0430\u0437\u0438\u043d + Telegram Mini App', en: 'Store + Telegram Mini App' }
+  },
+  {
+    slug: 'amocrm-platrum',
+    url: '#about',
+    title: { ru: 'AMOcrm x Platrum', en: 'AMOcrm x Platrum' },
+    type: { ru: 'CRM \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044f', en: 'CRM integration' }
+  }
+];
+
+const CORE_SERVICES = {
+  ru: [
+    '\u0414\u0438\u0437\u0430\u0439\u043d + fullstack \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u043a\u0430 \u0441\u0430\u0439\u0442\u043e\u0432 \u043f\u043e\u0434 \u043a\u043b\u044e\u0447.',
+    '\u0418\u043d\u0442\u0435\u0440\u043d\u0435\u0442-\u043c\u0430\u0433\u0430\u0437\u0438\u043d\u044b, \u043a\u0430\u0442\u0430\u043b\u043e\u0433\u0438, \u043e\u043f\u043b\u0430\u0442\u044b, CRM-\u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438.',
+    '\u0411\u0440\u0435\u043d\u0434\u043e\u0432\u044b\u0435 \u0438 \u0438\u043c\u0438\u0434\u0436\u0435\u0432\u044b\u0435 \u043f\u0440\u043e\u0435\u043a\u0442\u044b \u0441 \u0432\u044b\u0441\u043e\u043a\u0438\u043c \u0443\u0440\u043e\u0432\u043d\u0435\u043c motion UX.',
+    '\u0422\u0435\u0445\u043d\u0438\u0447\u0435\u0441\u043a\u043e\u0435 \u0432\u0435\u0434\u0435\u043d\u0438\u0435: \u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0430, \u043e\u043f\u0442\u0438\u043c\u0438\u0437\u0430\u0446\u0438\u044f, \u0440\u0435\u043b\u0438\u0437\u044b.'
+  ],
+  en: [
+    'Design plus fullstack website delivery end-to-end.',
+    'E-commerce systems: catalog, checkout, payment and CRM integrations.',
+    'Brand and editorial products with strong motion UX.',
+    'Technical ownership: architecture, optimization and release pipeline.'
+  ]
+};
+
+const AUTOMATIONS = {
+  ru: [
+    'AMOcrm -> Platrum: \u0430\u0432\u0442\u043e\u043f\u0435\u0440\u0435\u0434\u0430\u0447\u0430 \u043f\u0440\u044f\u043c\u044b\u0445 \u0440\u0430\u0441\u0445\u043e\u0434\u043e\u0432 \u0432 \u043c\u043e\u0434\u0443\u043b\u044c \u0444\u0438\u043d\u0430\u043d\u0441\u043e\u0432.',
+    '@Dodologistic_bot: \u0432\u044b\u043a\u0443\u043f \u0438 \u043b\u043e\u0433\u0438\u0441\u0442\u0438\u043a\u0430 \u0442\u043e\u0432\u0430\u0440\u043e\u0432 \u0438\u0437 POIZON.',
+    '@ClevVPN_bot, @NextGenVPN_bot: \u0431\u043e\u0442\u044b \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f VPN-\u043f\u043e\u0434\u043f\u0438\u0441\u043a\u0430\u043c\u0438.',
+    '@monoflore_bot: \u0437\u0430\u043a\u0430\u0437 \u0446\u0432\u0435\u0442\u043e\u0432 \u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u043e\u0439 \u043f\u043e \u041c\u043e\u0441\u043a\u0432\u0435.'
+  ],
+  en: [
+    'AMOcrm -> Platrum integration for direct expense sync.',
+    '@Dodologistic_bot: POIZON sourcing and logistics automation.',
+    '@ClevVPN_bot and @NextGenVPN_bot: VPN subscription bots.',
+    '@monoflore_bot: flower order and delivery flow in Telegram.'
+  ]
+};
+
 let currentLanguage = DEFAULT_LANGUAGE;
-let transitionLocked = false;
+let transitionLock = false;
 let preloaderProgress = 0;
+let revealObserver;
 
 const detectLanguageFromPath = (pathname = window.location.pathname) => {
   const match = pathname.match(LANGUAGE_PATH_RE);
   return match ? match[1] : null;
 };
 
-const stripLanguageFromPath = (pathname = window.location.pathname) => {
+const stripLanguagePrefix = (pathname = window.location.pathname) => {
   const stripped = pathname.replace(LANGUAGE_PATH_RE, '');
   return stripped === '' ? '/' : stripped;
 };
 
 const buildLanguagePath = (lang, pathname = window.location.pathname) => {
-  const basePath = stripLanguageFromPath(pathname);
-  return basePath === '/' ? `/${lang}` : `/${lang}${basePath}`;
+  const base = stripLanguagePrefix(pathname);
+  return base === '/' ? `/${lang}` : `/${lang}${base}`;
 };
 
 const syncLanguagePath = (lang, replaceHistory) => {
@@ -268,123 +187,76 @@ const syncLanguagePath = (lang, replaceHistory) => {
   }
 
   const nextUrl = `${targetPath}${window.location.search}${window.location.hash}`;
-  const historyMethod = replaceHistory ? 'replaceState' : 'pushState';
-  window.history[historyMethod]({}, '', nextUrl);
+  const method = replaceHistory ? 'replaceState' : 'pushState';
+  window.history[method]({}, '', nextUrl);
 };
 
-const setMeta = (langData) => {
-  document.title = langData.metaTitle;
-  const description = document.querySelector('meta[name="description"]');
-  if (description) {
-    description.setAttribute('content', langData.metaDescription);
+const setMeta = (lang) => {
+  const config = UI[lang];
+  document.title = config.metaTitle;
+  const desc = document.querySelector('meta[name="description"]');
+  if (desc) {
+    desc.setAttribute('content', config.metaDescription);
   }
 };
 
-const applyStaticTranslations = (ui) => {
+const applyStaticTranslations = (lang) => {
+  const dict = UI[lang].strings;
   document.querySelectorAll('[data-i18n]').forEach((node) => {
     const key = node.dataset.i18n;
-    if (Object.prototype.hasOwnProperty.call(ui, key)) {
-      node.textContent = ui[key];
+    if (Object.prototype.hasOwnProperty.call(dict, key)) {
+      node.textContent = dict[key];
     }
   });
 };
 
-const renderProjects = (langData) => {
-  projectList.innerHTML = langData.projects
-    .map((project, index) => {
-      const idx = String(index + 1).padStart(2, '0');
-      const stackHtml = project.stack.map((item) => `<li>${item}</li>`).join('');
-      return `
-        <article class="project-card" data-reveal data-tilt>
-          <a href="${project.url}" ${project.url.startsWith('#') ? '' : 'target="_blank" rel="noreferrer"'}>
-            <div class="project-index">${idx}</div>
-            <div class="project-meta">
-              <p class="project-type">${project.type}</p>
-              <h3 class="project-title">${project.title}</h3>
-              <p class="project-desc">${project.description}</p>
-              <ul class="project-stack">${stackHtml}</ul>
-            </div>
-            <div class="project-result">
-              <small>${langData.ui.resultLabel}</small>
-              <strong>${project.result}</strong>
-            </div>
-          </a>
-        </article>
-      `;
-    })
-    .join('');
+const renderProjects = (lang) => {
+  const html = PROJECTS.map((project, idx) => {
+    const index = String(idx + 1).padStart(2, '0');
+    const preview = `/work/${project.slug}/cover.jpg`;
+    const isExternal = !project.url.startsWith('#');
+    const externalAttrs = isExternal ? 'target="_blank" rel="noreferrer"' : '';
+    return `
+      <article class="work-row" data-reveal>
+        <a class="work-link" href="${project.url}" ${externalAttrs} data-preview="${preview}" data-preview-title="${project.title[lang]}">
+          <span class="work-index">${index}</span>
+          <div class="work-main">
+            <h3 class="work-title">${project.title[lang]}</h3>
+            <p class="work-meta">${project.type[lang]}</p>
+          </div>
+          <span class="work-arrow">↗</span>
+        </a>
+      </article>
+    `;
+  }).join('');
+
+  workList.innerHTML = html;
+  bindReveal();
+  bindWorkPreview();
 };
 
-const renderSimpleList = (container, items) => {
-  container.innerHTML = items.map((item) => `<li>${item}</li>`).join('');
+const renderLists = (lang) => {
+  coreList.innerHTML = CORE_SERVICES[lang].map((item) => `<li>${item}</li>`).join('');
+  autoList.innerHTML = AUTOMATIONS[lang].map((item) => `<li>${item}</li>`).join('');
 };
 
 const applyLanguage = (lang, replaceHistory) => {
   const normalized = SUPPORTED_LANGUAGES.includes(lang) ? lang : DEFAULT_LANGUAGE;
   currentLanguage = normalized;
-
-  const langData = DATA[normalized];
   document.documentElement.lang = normalized;
-  setMeta(langData);
-  applyStaticTranslations(langData.ui);
-  renderProjects(langData);
-  renderSimpleList(serviceList, langData.services);
-  renderSimpleList(automationList, langData.automations);
 
-  const switchLabel = normalized === 'ru' ? 'EN' : 'RU';
-  const switchAria = normalized === 'ru' ? 'Switch to English' : 'Switch to Russian';
-  langSwitch.textContent = switchLabel;
-  langSwitch.setAttribute('aria-label', switchAria);
+  setMeta(normalized);
+  applyStaticTranslations(normalized);
+  renderProjects(normalized);
+  renderLists(normalized);
+
+  langSwitch.textContent = normalized === 'ru' ? 'EN' : 'RU';
+  langSwitch.setAttribute('aria-label', normalized === 'ru' ? 'Switch to English' : 'Switch to Russian');
 
   syncLanguagePath(normalized, replaceHistory);
-  bindRevealObserver();
-  bindTiltEffects();
 };
 
-const runPageTransition = (callback) => {
-  if (transitionLocked) {
-    callback();
-    return;
-  }
-
-  transitionLocked = true;
-  pageTransition.classList.add('is-active');
-
-  window.setTimeout(() => {
-    callback();
-  }, 250);
-
-  window.setTimeout(() => {
-    pageTransition.classList.remove('is-active');
-    transitionLocked = false;
-  }, 880);
-};
-
-const handleAnchorNavigation = (event) => {
-  const href = event.currentTarget.getAttribute('href');
-  if (!href || !href.startsWith('#')) {
-    return;
-  }
-
-  const target = document.querySelector(href);
-  if (!target) {
-    return;
-  }
-
-  event.preventDefault();
-  runPageTransition(() => {
-    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-};
-
-const bindNavLinks = () => {
-  document.querySelectorAll('[data-nav-link]').forEach((link) => {
-    link.addEventListener('click', handleAnchorNavigation);
-  });
-};
-
-let revealObserver;
-const bindRevealObserver = () => {
+const bindReveal = () => {
   if (!revealObserver) {
     revealObserver = new IntersectionObserver(
       (entries) => {
@@ -403,52 +275,62 @@ const bindRevealObserver = () => {
     if (node.dataset.revealBound === '1') {
       return;
     }
-
     node.dataset.revealBound = '1';
     node.style.transitionDelay = `${Math.min(index * 55, 260)}ms`;
     revealObserver.observe(node);
   });
 };
 
-let counterObserver;
-const animateCounter = (node) => {
-  const target = Number(node.dataset.counter || 0);
-  const duration = 1200;
-  const start = performance.now();
-
-  const draw = (time) => {
-    const t = Math.min((time - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - t, 3);
-    node.textContent = String(Math.floor(target * eased));
-    if (t < 1) {
-      requestAnimationFrame(draw);
-    }
-  };
-
-  requestAnimationFrame(draw);
-};
-
-const bindCounterObserver = () => {
-  if (!counterObserver) {
-    counterObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            animateCounter(entry.target);
-            counterObserver.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.45 }
-    );
+const runTransition = (callback) => {
+  if (transitionLock) {
+    callback();
+    return;
   }
 
-  document.querySelectorAll('[data-counter]').forEach((node) => {
-    if (node.dataset.counterBound === '1') {
-      return;
-    }
-    node.dataset.counterBound = '1';
-    counterObserver.observe(node);
+  transitionLock = true;
+  pageTransition.classList.add('is-active');
+  window.setTimeout(() => callback(), 220);
+  window.setTimeout(() => {
+    pageTransition.classList.remove('is-active');
+    transitionLock = false;
+  }, 860);
+};
+
+const closeMenu = () => {
+  menuOverlay.classList.remove('is-open');
+  menuOverlay.setAttribute('aria-hidden', 'true');
+  document.body.classList.remove('menu-open');
+};
+
+const openMenu = () => {
+  menuOverlay.classList.add('is-open');
+  menuOverlay.setAttribute('aria-hidden', 'false');
+  document.body.classList.add('menu-open');
+};
+
+const handleAnchorNav = (event) => {
+  const href = event.currentTarget.getAttribute('href');
+  if (!href || !href.startsWith('#')) {
+    closeMenu();
+    return;
+  }
+
+  const target = document.querySelector(href);
+  if (!target) {
+    closeMenu();
+    return;
+  }
+
+  event.preventDefault();
+  closeMenu();
+  runTransition(() => {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+};
+
+const bindNavigationLinks = () => {
+  document.querySelectorAll('[data-nav-link]').forEach((link) => {
+    link.addEventListener('click', handleAnchorNav);
   });
 };
 
@@ -477,19 +359,19 @@ const bindCursor = () => {
   frame();
 
   document.addEventListener('mouseover', (event) => {
-    if (event.target.closest('a, button, .project-card')) {
+    if (event.target.closest('a, button')) {
       cursor.classList.add('is-active');
     }
   });
 
   document.addEventListener('mouseout', (event) => {
-    if (event.target.closest('a, button, .project-card')) {
+    if (event.target.closest('a, button')) {
       cursor.classList.remove('is-active');
     }
   });
 };
 
-const bindMagneticButtons = () => {
+const bindMagnetic = () => {
   document.querySelectorAll('.magnetic').forEach((node) => {
     if (node.dataset.magneticBound === '1') {
       return;
@@ -509,95 +391,108 @@ const bindMagneticButtons = () => {
   });
 };
 
-const bindTiltEffects = () => {
-  document.querySelectorAll('[data-tilt]').forEach((card) => {
-    if (card.dataset.tiltBound === '1') {
+const bindWorkPreview = () => {
+  const isHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (!isHover) {
+    return;
+  }
+
+  document.querySelectorAll('.work-link').forEach((link) => {
+    if (link.dataset.hoverBound === '1') {
       return;
     }
-    card.dataset.tiltBound = '1';
+    link.dataset.hoverBound = '1';
 
-    card.addEventListener('mousemove', (event) => {
-      const rect = card.getBoundingClientRect();
-      const px = (event.clientX - rect.left) / rect.width;
-      const py = (event.clientY - rect.top) / rect.height;
-      const rx = (0.5 - py) * 5;
-      const ry = (px - 0.5) * 5;
-      card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+    link.addEventListener('mouseenter', (event) => {
+      const previewSrc = event.currentTarget.dataset.preview;
+      const previewTitle = event.currentTarget.dataset.previewTitle;
+      workHoverImage.classList.remove('is-hidden');
+      workHoverImage.src = previewSrc;
+      workHoverImage.alt = previewTitle;
+      workHoverTitle.textContent = previewTitle;
+      workHoverPreview.classList.add('is-visible');
     });
 
-    card.addEventListener('mouseleave', () => {
-      card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+    link.addEventListener('mousemove', (event) => {
+      workHoverPreview.style.left = `${event.clientX + 30}px`;
+      workHoverPreview.style.top = `${event.clientY + 18}px`;
+    });
+
+    link.addEventListener('mouseleave', () => {
+      workHoverPreview.classList.remove('is-visible');
     });
   });
-};
 
-const setYear = () => {
-  const yearNode = document.getElementById('year');
-  if (yearNode) {
-    yearNode.textContent = String(new Date().getFullYear());
-  }
+  workHoverImage.onerror = () => {
+    workHoverImage.classList.add('is-hidden');
+  };
 };
 
 const runPreloader = () => {
   document.body.style.overflow = 'hidden';
-
   const tick = () => {
-    preloaderProgress += Math.random() * 13 + 5;
+    preloaderProgress += Math.random() * 14 + 5;
     if (preloaderProgress >= 100) {
       preloaderProgress = 100;
       preloaderBar.style.width = '100%';
-      preloaderPercent.textContent = '100%';
-
+      preloaderValue.textContent = '100%';
       window.setTimeout(() => {
         preloader.classList.add('is-hidden');
-        document.body.style.overflow = 'auto';
+        document.body.style.overflow = '';
       }, 260);
       return;
     }
 
     preloaderBar.style.width = `${preloaderProgress.toFixed(1)}%`;
-    preloaderPercent.textContent = `${Math.floor(preloaderProgress)}%`;
+    preloaderValue.textContent = `${Math.floor(preloaderProgress)}%`;
     window.setTimeout(tick, 90);
   };
 
   tick();
 };
 
-const resolveInitialLanguage = () => {
-  const pathLang = detectLanguageFromPath();
-  if (pathLang && SUPPORTED_LANGUAGES.includes(pathLang)) {
-    return pathLang;
+const setYear = () => {
+  const year = document.getElementById('year');
+  if (year) {
+    year.textContent = String(new Date().getFullYear());
   }
+};
 
+const resolveInitialLanguage = () => {
+  const lang = detectLanguageFromPath();
+  if (lang && SUPPORTED_LANGUAGES.includes(lang)) {
+    return lang;
+  }
   syncLanguagePath(DEFAULT_LANGUAGE, true);
   return DEFAULT_LANGUAGE;
 };
 
-bindNavLinks();
+bindNavigationLinks();
 bindCursor();
-bindMagneticButtons();
+bindMagnetic();
 setYear();
 
 const initialLanguage = resolveInitialLanguage();
 applyLanguage(initialLanguage, true);
-bindCounterObserver();
 runPreloader();
 
+menuToggle.addEventListener('click', openMenu);
+menuClose.addEventListener('click', closeMenu);
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    closeMenu();
+  }
+});
+
 langSwitch.addEventListener('click', () => {
-  const nextLanguage = currentLanguage === 'ru' ? 'en' : 'ru';
-  runPageTransition(() => {
-    applyLanguage(nextLanguage, false);
+  const next = currentLanguage === 'ru' ? 'en' : 'ru';
+  runTransition(() => {
+    applyLanguage(next, false);
   });
 });
 
 window.addEventListener('popstate', () => {
-  const pathLang = detectLanguageFromPath();
-  if (!pathLang) {
-    applyLanguage(DEFAULT_LANGUAGE, true);
-    return;
-  }
-
-  if (pathLang !== currentLanguage) {
-    applyLanguage(pathLang, true);
-  }
+  const lang = detectLanguageFromPath();
+  applyLanguage(lang || DEFAULT_LANGUAGE, true);
 });

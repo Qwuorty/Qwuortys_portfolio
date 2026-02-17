@@ -1,315 +1,528 @@
-const loader = document.querySelector('.loader');
-const loaderBar = document.querySelector('.loader__bar');
+const preloader = document.getElementById('preloader');
+const preloaderBar = document.getElementById('preloaderBar');
+const preloaderPercent = document.getElementById('preloaderPercent');
+const pageTransition = document.getElementById('pageTransition');
 const cursor = document.querySelector('.cursor');
 const langSwitch = document.getElementById('langSwitch');
-const revealItems = document.querySelectorAll('[data-reveal]');
-const counters = document.querySelectorAll('[data-counter]');
-const magneticItems = document.querySelectorAll('.magnetic');
-const tiltCards = document.querySelectorAll('[data-tilt]');
+const projectList = document.getElementById('projectList');
+const serviceList = document.getElementById('serviceList');
+const automationList = document.getElementById('automationList');
 
 const SUPPORTED_LANGUAGES = ['ru', 'en'];
+const DEFAULT_LANGUAGE = 'ru';
 const LANGUAGE_PATH_RE = /^\/(ru|en)(?=\/|$)/;
 
-const englishStrings = {
-  'loader.label': 'Booting portfolio engine...',
-  'nav.work': 'Work',
-  'nav.about': 'About',
-  'nav.contact': 'Contact',
-  'header.cta': 'Start Project',
-  'hero.eyebrow': 'FULLSTACK DEVELOPER',
-  'hero.title.line1': 'I build',
-  'hero.title.line2': 'products that ship',
-  'hero.title.line3': 'fast and scale clean.',
-  'hero.text': 'Next.js, Node.js, PostgreSQL, Docker. I help founders launch and grow SaaS, internal systems, and customer-facing web apps.',
-  'hero.btn.work': 'See Cases',
-  'hero.btn.contact': 'Book a call',
-  'stats.projects': 'Projects delivered',
-  'stats.products': 'Products from scratch',
-  'stats.lighthouse': 'Avg. Lighthouse score',
-  'work.kicker': 'Selected Work',
-  'work.title': 'Fullstack case studies',
-  'card1.tag': 'B2B SaaS',
-  'card1.title': 'Revenue Ops Platform',
-  'card1.text': 'Built a role-based dashboard with custom analytics and Stripe billing flows.',
-  'card1.li1': 'Next.js + NestJS',
-  'card1.li2': 'PostgreSQL + Redis',
-  'card1.li3': 'Launch in 21 days',
-  'card2.tag': 'Marketplace',
-  'card2.title': 'Vendor Control Hub',
-  'card2.text': 'Replaced manual workflows with automations for invoices, stock, and logistics.',
-  'card2.li1': 'React + Node API',
-  'card2.li2': 'Queue workers',
-  'card2.li3': '-64% manual ops time',
-  'card3.tag': 'Fintech',
-  'card3.title': 'Client Onboarding App',
-  'card3.text': 'Implemented secure onboarding with document checks and audit logs.',
-  'card3.li1': 'Next.js + Go microservice',
-  'card3.li2': 'Encrypted file storage',
-  'card3.li3': '4.9/5 internal rating',
-  'card4.tag': 'Internal Tooling',
-  'card4.title': 'Support Flow Engine',
-  'card4.text': 'Delivered a workflow builder to route tickets automatically across teams.',
-  'card4.li1': 'TypeScript mono-repo',
-  'card4.li2': 'Real-time events',
-  'card4.li3': '+38% first-response speed',
-  'about.kicker': 'What I Bring',
-  'about.title': 'Engineering with product mindset',
-  'about.p1': 'I combine frontend craft, backend reliability, and deployment ownership. You get one engineer who can turn ideas into production-ready software.',
-  'about.p2': 'My process: audit, architecture, weekly milestones, measurable outcomes.',
-  'contact.kicker': 'Contact',
-  'contact.title': 'Need a fullstack partner for your next release?',
-  'contact.text': 'Send your scope, and I will return architecture, timeline, and budget options within 60 minutes.',
-  'contact.telegram': 'Telegram',
-  'footer.top': 'Back to top'
-};
-
-const russianStrings = {
-  'loader.label': '\u0417\u0430\u043f\u0443\u0441\u043a \u043f\u043e\u0440\u0442\u0444\u043e\u043b\u0438\u043e...',
-  'nav.work': '\u041a\u0435\u0439\u0441\u044b',
-  'nav.about': '\u041e\u0431\u043e \u043c\u043d\u0435',
-  'nav.contact': '\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u044b',
-  'header.cta': '\u041d\u0430\u0447\u0430\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442',
-  'hero.eyebrow': 'FULLSTACK \u0420\u0410\u0417\u0420\u0410\u0411\u041e\u0422\u0427\u0418\u041a',
-  'hero.title.line1': '\u0421\u043e\u0437\u0434\u0430\u044e',
-  'hero.title.line2': '\u0432\u0435\u0431-\u043f\u0440\u043e\u0434\u0443\u043a\u0442\u044b,',
-  'hero.title.line3': '\u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u0437\u0430\u043f\u0443\u0441\u043a\u0430\u044e\u0442\u0441\u044f \u0431\u044b\u0441\u0442\u0440\u043e \u0438 \u043c\u0430\u0441\u0448\u0442\u0430\u0431\u0438\u0440\u0443\u044e\u0442\u0441\u044f.',
-  'hero.text': 'Next.js, Node.js, PostgreSQL, Docker. \u041f\u043e\u043c\u043e\u0433\u0430\u044e \u0437\u0430\u043f\u0443\u0441\u043a\u0430\u0442\u044c \u0438 \u0440\u0430\u0437\u0432\u0438\u0432\u0430\u0442\u044c SaaS, \u0432\u043d\u0443\u0442\u0440\u0435\u043d\u043d\u0438\u0435 \u0441\u0438\u0441\u0442\u0435\u043c\u044b \u0438 \u043a\u043b\u0438\u0435\u043d\u0442\u0441\u043a\u0438\u0435 \u0432\u0435\u0431-\u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u044f.',
-  'hero.btn.work': '\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u043a\u0435\u0439\u0441\u044b',
-  'hero.btn.contact': '\u041e\u0431\u0441\u0443\u0434\u0438\u0442\u044c \u0437\u0430\u0434\u0430\u0447\u0443',
-  'stats.projects': '\u0412\u044b\u043f\u043e\u043b\u043d\u0435\u043d\u043e \u043f\u0440\u043e\u0435\u043a\u0442\u043e\u0432',
-  'stats.products': '\u0417\u0430\u043f\u0443\u0449\u0435\u043d\u043e \u043f\u0440\u043e\u0434\u0443\u043a\u0442\u043e\u0432 \u0441 \u043d\u0443\u043b\u044f',
-  'stats.lighthouse': '\u0421\u0440\u0435\u0434\u043d\u0438\u0439 Lighthouse score',
-  'work.kicker': '\u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435 \u043f\u0440\u043e\u0435\u043a\u0442\u044b',
-  'work.title': 'Fullstack \u043a\u0435\u0439\u0441\u044b',
-  'card1.tag': 'B2B SaaS',
-  'card1.title': '\u041f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u0430 Revenue Ops',
-  'card1.text': '\u0421\u043e\u0431\u0440\u0430\u043b \u0440\u043e\u043b\u0435\u0432\u0443\u044e \u043f\u0430\u043d\u0435\u043b\u044c \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u0441 \u043a\u0430\u0441\u0442\u043e\u043c\u043d\u043e\u0439 \u0430\u043d\u0430\u043b\u0438\u0442\u0438\u043a\u043e\u0439 \u0438 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0435\u0439 Stripe Billing.',
-  'card1.li1': 'Next.js + NestJS',
-  'card1.li2': 'PostgreSQL + Redis',
-  'card1.li3': '\u0417\u0430\u043f\u0443\u0441\u043a \u0437\u0430 21 \u0434\u0435\u043d\u044c',
-  'card2.tag': '\u041c\u0430\u0440\u043a\u0435\u0442\u043f\u043b\u0435\u0439\u0441',
-  'card2.title': '\u0426\u0435\u043d\u0442\u0440 \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u044f \u043f\u0440\u043e\u0434\u0430\u0432\u0446\u0430\u043c\u0438',
-  'card2.text': '\u0410\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0438\u0440\u043e\u0432\u0430\u043b \u0440\u0443\u0442\u0438\u043d\u043d\u044b\u0435 \u043f\u0440\u043e\u0446\u0435\u0441\u0441\u044b: \u0441\u0447\u0435\u0442\u0430, \u043e\u0441\u0442\u0430\u0442\u043a\u0438 \u0438 \u043b\u043e\u0433\u0438\u0441\u0442\u0438\u043a\u0443.',
-  'card2.li1': 'React + Node API',
-  'card2.li2': '\u041e\u0447\u0435\u0440\u0435\u0434\u0438 \u0437\u0430\u0434\u0430\u0447',
-  'card2.li3': '-64% \u0440\u0443\u0447\u043d\u044b\u0445 \u043e\u043f\u0435\u0440\u0430\u0446\u0438\u0439',
-  'card3.tag': '\u0424\u0438\u043d\u0442\u0435\u0445',
-  'card3.title': '\u041e\u043d\u0431\u043e\u0440\u0434\u0438\u043d\u0433 \u043a\u043b\u0438\u0435\u043d\u0442\u043e\u0432',
-  'card3.text': '\u0420\u0435\u0430\u043b\u0438\u0437\u043e\u0432\u0430\u043b \u0431\u0435\u0437\u043e\u043f\u0430\u0441\u043d\u044b\u0439 \u043e\u043d\u0431\u043e\u0440\u0434\u0438\u043d\u0433 \u0441 \u043f\u0440\u043e\u0432\u0435\u0440\u043a\u043e\u0439 \u0434\u043e\u043a\u0443\u043c\u0435\u043d\u0442\u043e\u0432 \u0438 \u0430\u0443\u0434\u0438\u0442-\u043b\u043e\u0433\u0430\u043c\u0438.',
-  'card3.li1': 'Next.js + Go microservice',
-  'card3.li2': '\u0428\u0438\u0444\u0440\u043e\u0432\u0430\u043d\u043d\u043e\u0435 \u0445\u0440\u0430\u043d\u0435\u043d\u0438\u0435 \u0444\u0430\u0439\u043b\u043e\u0432',
-  'card3.li3': '4.9/5 \u043e\u0446\u0435\u043d\u043a\u0430 \u043a\u043e\u043c\u0430\u043d\u0434\u044b',
-  'card4.tag': '\u0412\u043d\u0443\u0442\u0440\u0435\u043d\u043d\u0438\u0435 \u0438\u043d\u0441\u0442\u0440\u0443\u043c\u0435\u043d\u0442\u044b',
-  'card4.title': '\u0414\u0432\u0438\u0436\u043e\u043a \u043f\u043e\u0434\u0434\u0435\u0440\u0436\u043a\u0438',
-  'card4.text': '\u0421\u043e\u0431\u0440\u0430\u043b \u043a\u043e\u043d\u0441\u0442\u0440\u0443\u043a\u0442\u043e\u0440 \u043f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0432 \u0434\u043b\u044f \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0447\u0435\u0441\u043a\u043e\u0439 \u043c\u0430\u0440\u0448\u0440\u0443\u0442\u0438\u0437\u0430\u0446\u0438\u0438 \u0442\u0438\u043a\u0435\u0442\u043e\u0432.',
-  'card4.li1': 'TypeScript mono-repo',
-  'card4.li2': '\u0421\u043e\u0431\u044b\u0442\u0438\u044f \u0432 \u0440\u0435\u0430\u043b\u044c\u043d\u043e\u043c \u0432\u0440\u0435\u043c\u0435\u043d\u0438',
-  'card4.li3': '+38% \u0441\u043a\u043e\u0440\u043e\u0441\u0442\u044c \u043f\u0435\u0440\u0432\u043e\u0433\u043e \u043e\u0442\u0432\u0435\u0442\u0430',
-  'about.kicker': '\u0427\u0442\u043e \u0434\u0430\u044e \u043f\u0440\u043e\u0435\u043a\u0442\u0443',
-  'about.title': '\u0418\u043d\u0436\u0435\u043d\u0435\u0440\u0438\u044f \u0441 \u043f\u0440\u043e\u0434\u0443\u043a\u0442\u043e\u0432\u044b\u043c \u043c\u044b\u0448\u043b\u0435\u043d\u0438\u0435\u043c',
-  'about.p1': '\u041a\u043e\u043c\u0431\u0438\u043d\u0438\u0440\u0443\u044e \u0441\u0438\u043b\u044c\u043d\u044b\u0439 \u0444\u0440\u043e\u043d\u0442\u0435\u043d\u0434, \u043d\u0430\u0434\u0435\u0436\u043d\u044b\u0439 \u0431\u044d\u043a\u0435\u043d\u0434 \u0438 \u043f\u043e\u043b\u043d\u044b\u0439 \u043a\u043e\u043d\u0442\u0440\u043e\u043b\u044c \u0434\u0435\u043f\u043b\u043e\u044f. \u0412\u044b \u043f\u043e\u043b\u0443\u0447\u0430\u0435\u0442\u0435 \u043e\u0434\u043d\u043e\u0433\u043e \u0438\u043d\u0436\u0435\u043d\u0435\u0440\u0430, \u043a\u043e\u0442\u043e\u0440\u044b\u0439 \u0434\u043e\u0432\u043e\u0434\u0438\u0442 \u0438\u0434\u0435\u044e \u0434\u043e \u043f\u0440\u043e\u0434\u0430\u043a\u0448\u0435\u043d\u0430.',
-  'about.p2': '\u041f\u0440\u043e\u0446\u0435\u0441\u0441: \u0430\u0443\u0434\u0438\u0442, \u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0430, \u043d\u0435\u0434\u0435\u043b\u044c\u043d\u044b\u0435 \u044d\u0442\u0430\u043f\u044b \u0438 \u0438\u0437\u043c\u0435\u0440\u0438\u043c\u044b\u0435 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442\u044b.',
-  'contact.kicker': '\u041a\u043e\u043d\u0442\u0430\u043a\u0442\u044b',
-  'contact.title': '\u041d\u0443\u0436\u0435\u043d fullstack-\u043f\u0430\u0440\u0442\u043d\u0435\u0440 \u0434\u043b\u044f \u0441\u043b\u0435\u0434\u0443\u044e\u0449\u0435\u0433\u043e \u0440\u0435\u043b\u0438\u0437\u0430?',
-  'contact.text': '\u041e\u0442\u043f\u0440\u0430\u0432\u044c\u0442\u0435 \u043a\u0440\u0430\u0442\u043a\u043e\u0435 \u043e\u043f\u0438\u0441\u0430\u043d\u0438\u0435 \u0437\u0430\u0434\u0430\u0447\u0438, \u0438 \u044f \u0432\u0435\u0440\u043d\u0443 \u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0443, \u0441\u0440\u043e\u043a\u0438 \u0438 \u0432\u0430\u0440\u0438\u0430\u043d\u0442\u044b \u0431\u044e\u0434\u0436\u0435\u0442\u0430 \u0432 \u0442\u0435\u0447\u0435\u043d\u0438\u0435 60 \u043c\u0438\u043d\u0443\u0442.',
-  'contact.telegram': 'Telegram',
-  'footer.top': '\u041d\u0430\u0432\u0435\u0440\u0445'
-};
-
-const translations = {
-  en: {
-    title: 'Alex Voss | Fullstack Developer',
-    description: 'Dennis-inspired portfolio skeleton for a fullstack developer focused on product delivery and performance.',
-    strings: englishStrings
-  },
+const DATA = {
   ru: {
-    title: 'Alex Voss | Fullstack \u0420\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a',
-    description: '\u041f\u043e\u0440\u0442\u0444\u043e\u043b\u0438\u043e fullstack-\u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a\u0430: \u0437\u0430\u043f\u0443\u0441\u043a \u0438 \u0440\u0430\u0437\u0432\u0438\u0442\u0438\u0435 \u0432\u0435\u0431-\u043f\u0440\u043e\u0434\u0443\u043a\u0442\u043e\u0432 \u0441 \u0444\u043e\u043a\u0443\u0441\u043e\u043c \u043d\u0430 \u0441\u043a\u043e\u0440\u043e\u0441\u0442\u044c \u0438 \u043d\u0430\u0434\u0435\u0436\u043d\u043e\u0441\u0442\u044c.',
-    strings: russianStrings
+    metaTitle: '\u041c\u0430\u043a\u0441\u0438\u043c qwuorty | Fullstack \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a',
+    metaDescription:
+      '\u041f\u043e\u0440\u0442\u0444\u043e\u043b\u0438\u043e \u041c\u0430\u043a\u0441\u0438\u043c\u0430 qwuorty: design + fullstack, e-commerce, \u043c\u0438\u043d\u0438-\u043f\u0440\u0438\u043b\u043e\u0436\u0435\u043d\u0438\u044f \u0438 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044f \u0431\u0438\u0437\u043d\u0435\u0441-\u043f\u0440\u043e\u0446\u0435\u0441\u0441\u043e\u0432.',
+    ui: {
+      'preloader.label': '\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u043f\u043e\u0440\u0442\u0444\u043e\u043b\u0438\u043e',
+      'nav.home': '\u0413\u043b\u0430\u0432\u043d\u0430\u044f',
+      'nav.work': '\u041a\u0435\u0439\u0441\u044b',
+      'nav.about': '\u041e\u0431\u043e \u043c\u043d\u0435',
+      'nav.contact': '\u041a\u043e\u043d\u0442\u0430\u043a\u0442',
+      'hero.kicker': 'Design + Fullstack',
+      'hero.line1': '\u0414\u0435\u043b\u0430\u044e \u0446\u0438\u0444\u0440\u043e\u0432\u044b\u0435 \u043f\u0440\u043e\u0434\u0443\u043a\u0442\u044b',
+      'hero.line2': '\u0441 \u043f\u0440\u0435\u043c\u0438\u0443\u043c-\u043f\u043e\u0434\u0430\u0447\u0435\u0439,',
+      'hero.line3': '\u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u043f\u0440\u043e\u0434\u0430\u044e\u0442 \u0438 \u043c\u0430\u0441\u0448\u0442\u0430\u0431\u0438\u0440\u0443\u044e\u0442\u0441\u044f.',
+      'hero.text':
+        '\u041f\u0440\u043e\u0435\u043a\u0442\u0438\u0440\u0443\u044e \u0438 \u0440\u0430\u0437\u0440\u0430\u0431\u0430\u0442\u044b\u0432\u0430\u044e \u0441\u0430\u0439\u0442\u044b, \u0438\u043d\u0442\u0435\u0440\u043d\u0435\u0442-\u043c\u0430\u0433\u0430\u0437\u0438\u043d\u044b, \u043c\u0443\u0437\u0435\u0439\u043d\u044b\u0435 \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u044b, Telegram Mini Apps \u0438 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438 \u043f\u043e\u0434 \u043a\u043b\u044e\u0447.',
+      'hero.cta1': '\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442\u044b',
+      'hero.cta2': '\u041d\u0430\u0447\u0430\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442',
+      'stats.websites': '\u041a\u0440\u0443\u043f\u043d\u044b\u0445 web-\u043f\u0440\u043e\u0435\u043a\u0442\u043e\u0432',
+      'stats.bots': 'Telegram-\u0431\u043e\u0442\u043e\u0432',
+      'stats.fullcycle': '\u041f\u043e\u043b\u043d\u044b\u0439 \u0446\u0438\u043a\u043b: \u0434\u0438\u0437\u0430\u0439\u043d + fullstack',
+      'work.kicker': '\u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435 \u043a\u0435\u0439\u0441\u044b',
+      'work.title': '\u0421\u0430\u0439\u0442\u044b, \u043c\u0430\u0433\u0430\u0437\u0438\u043d\u044b \u0438 \u0446\u0438\u0444\u0440\u043e\u0432\u044b\u0435 \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u044b',
+      'about.kicker': '\u0427\u0442\u043e \u044f \u0434\u0435\u043b\u0430\u044e',
+      'about.title': 'Fullstack delivery \u0441 \u043f\u0440\u043e\u0434\u0443\u043a\u0442\u043e\u0432\u044b\u043c \u043c\u044b\u0448\u043b\u0435\u043d\u0438\u0435\u043c',
+      'about.serviceTitle': '\u041a\u043b\u044e\u0447\u0435\u0432\u044b\u0435 \u0443\u0441\u043b\u0443\u0433\u0438',
+      'about.automationTitle': '\u0410\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044f \u0438 \u0431\u043e\u0442\u044b',
+      'contact.kicker': '\u041a\u043e\u043d\u0442\u0430\u043a\u0442',
+      'contact.title': '\u041d\u0443\u0436\u0435\u043d \u0434\u0438\u0437\u0430\u0439\u043d + fullstack \u0432 \u043e\u0434\u043d\u0438\u0445 \u0440\u0443\u043a\u0430\u0445?',
+      'contact.text':
+        '\u041d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u0437\u0430\u0434\u0430\u0447\u0443, \u0438 \u044f \u0432\u0435\u0440\u043d\u0443 \u0430\u0440\u0445\u0438\u0442\u0435\u043a\u0442\u0443\u0440\u0443, \u0441\u0440\u043e\u043a\u0438 \u0438 \u043f\u043b\u0430\u043d \u0440\u0435\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u0438.',
+      'footer.top': '\u041d\u0430\u0432\u0435\u0440\u0445',
+      resultLabel: '\u0420\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442'
+    },
+    projects: [
+      {
+        type: '\u041a\u043d\u0438\u0436\u043d\u044b\u0439 e-commerce',
+        title: '\u041d\u0435\u0444\u043e\u0440\u043c\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u044c',
+        url: 'https://neformalnost.ru/',
+        description:
+          '\u0421\u043f\u0440\u043e\u0435\u043a\u0442\u0438\u0440\u043e\u0432\u0430\u043b \u0438 \u0440\u0435\u0430\u043b\u0438\u0437\u043e\u0432\u0430\u043b \u043f\u043e\u043b\u043d\u044b\u0439 digital-\u043a\u043e\u043d\u0442\u0443\u0440 \u043c\u0430\u0433\u0430\u0437\u0438\u043d\u0430: \u043a\u0430\u0442\u0430\u043b\u043e\u0433, \u043f\u043e\u0438\u0441\u043a, \u043a\u043e\u0440\u0437\u0438\u043d\u0430, CMS, \u043b\u043e\u0433\u0438\u0441\u0442\u0438\u043a\u0430.',
+        result: 'LCP ~1.7s, \u0440\u043e\u0441\u0442 \u043a\u043e\u043d\u0432\u0435\u0440\u0441\u0438\u0438 \u0447\u0435\u043a\u0430\u0443\u0442\u0430 +27%',
+        stack: ['Next.js', 'Node.js', 'PostgreSQL', 'Docker']
+      },
+      {
+        type: 'Brand e-commerce',
+        title: 'Kitchen Ceremony',
+        url: 'https://kitchenceremony.com/',
+        description:
+          '\u0421\u043e\u0431\u0440\u0430\u043b \u0431\u0440\u0435\u043d\u0434-\u043e\u043f\u044b\u0442 \u0441 \u0430\u043a\u0446\u0435\u043d\u0442\u043e\u043c \u043d\u0430 \u044d\u0441\u0442\u0435\u0442\u0438\u043a\u0443 \u0438 \u043a\u043e\u043d\u0432\u0435\u0440\u0441\u0438\u044e: \u043f\u0440\u0435\u0437\u0435\u043d\u0442\u0430\u0446\u0438\u044f \u043f\u0440\u043e\u0434\u0443\u043a\u0442\u0430, \u043a\u0430\u043c\u043f\u0430\u043d\u0438\u0439\u043d\u044b\u0435 \u043f\u043e\u0441\u0430\u0434\u043e\u0447\u043d\u044b\u0435, CMS.',
+        result: '\u041a\u0430\u043c\u043f\u0430\u043d\u0438\u044f \u0441 Ultima \u042f\u043d\u0434\u0435\u043a\u0441 \u0415\u0434\u0430, \u0440\u043e\u0441\u0442 repeat sessions +34%',
+        stack: ['Next.js', 'Headless CMS', 'Node API', 'Vercel']
+      },
+      {
+        type: '\u041c\u0443\u0437\u0435\u0439\u043d\u0430\u044f \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u0430',
+        title: '\u041c\u0443\u0437\u0435\u0439 AZ',
+        url: 'https://museum-az.com/',
+        description:
+          '\u0421\u0434\u0435\u043b\u0430\u043b \u0438\u043c\u0438\u0434\u0436\u0435\u0432\u044b\u0439 \u0438 \u0444\u0443\u043d\u043a\u0446\u0438\u043e\u043d\u0430\u043b\u044c\u043d\u044b\u0439 \u0441\u0430\u0439\u0442 \u043c\u0443\u0437\u0435\u044f: \u0430\u0444\u0438\u0448\u0430, \u0432\u044b\u0441\u0442\u0430\u0432\u043a\u0438, \u043d\u0430\u0432\u0438\u0433\u0430\u0446\u0438\u044f \u043f\u043e \u0441\u043e\u0431\u044b\u0442\u0438\u044f\u043c, \u0440\u0435\u0434\u0430\u043a\u0442\u0438\u0440\u0443\u0435\u043c\u044b\u0439 \u043a\u043e\u043d\u0442\u0435\u043d\u0442.',
+        result: '\u0420\u043e\u0441\u0442 online-\u0432\u043e\u0432\u043b\u0435\u0447\u0435\u043d\u043d\u043e\u0441\u0442\u0438 +41% \u043f\u043e \u0441\u0435\u0437\u043e\u043d\u0443',
+        stack: ['Nuxt', 'Node.js', 'Strapi', 'PostgreSQL']
+      },
+      {
+        type: '\u041e\u0431\u0443\u0432\u043d\u043e\u0439 marketplace',
+        title: 'GOAT',
+        url: 'https://www.goat.com/',
+        description:
+          '\u0412\u044b\u0441\u0442\u0440\u043e\u0438\u043b \u043f\u0430\u0442\u0442\u0435\u0440\u043d\u044b \u0434\u043b\u044f \u0432\u044b\u0441\u043e\u043a\u043e\u043d\u0430\u0433\u0440\u0443\u0436\u0435\u043d\u043d\u043e\u0439 \u0432\u0438\u0442\u0440\u0438\u043d\u044b: \u043a\u0430\u0442\u0430\u043b\u043e\u0433, \u043a\u0430\u0440\u0442\u043e\u0447\u043a\u0438, \u043f\u0443\u0442\u0438 \u0434\u043e \u043f\u043e\u043a\u0443\u043f\u043a\u0438.',
+        result: '\u0421\u0442\u0430\u0431\u0438\u043b\u044c\u043d\u044b\u0435 95+ \u043f\u043e Lighthouse \u043d\u0430 \u043a\u043b\u044e\u0447\u0435\u0432\u044b\u0445 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0430\u0445',
+        stack: ['React', 'Node.js', 'GraphQL', 'Redis']
+      },
+      {
+        type: '\u0421\u0430\u0439\u0442\u044b \u0440\u0435\u0441\u0442\u043e\u0440\u0430\u043d\u043e\u0432',
+        title: 'Flaner Moscow',
+        url: 'https://flanermoscow.ru/',
+        description:
+          '\u0421\u0434\u0435\u043b\u0430\u043b \u043f\u0440\u0435\u043c\u0438\u0443\u043c-\u043f\u043e\u0434\u0430\u0447\u0443 \u0434\u043b\u044f \u0434\u0432\u0443\u0445 \u043a\u043e\u043d\u0446\u0435\u043f\u0442\u043e\u0432 \u0440\u0435\u0441\u0442\u043e\u0440\u0430\u043d\u043e\u0432: \u0440\u0435\u0437\u0435\u0440\u0432\u044b, \u043c\u0435\u043d\u044e, \u0438\u0432\u0435\u043d\u0442\u044b, \u043c\u043e\u0431\u0438\u043b\u044c\u043d\u044b\u0439 UX.',
+        result: '\u041f\u043e\u043a\u0430\u0437\u0430\u0442\u0435\u043b\u044c \u0437\u0430\u044f\u0432\u043e\u043a \u043d\u0430 \u0431\u0440\u043e\u043d\u044c +33% \u043f\u043e\u0441\u043b\u0435 \u0437\u0430\u043f\u0443\u0441\u043a\u0430',
+        stack: ['Next.js', 'Node.js', 'PostgreSQL', 'Nginx']
+      },
+      {
+        type: '\u041e\u0431\u0443\u0432\u043d\u043e\u0439 \u043c\u0430\u0433\u0430\u0437\u0438\u043d + Mini App',
+        title: 'Unicorn GO',
+        url: 'https://unicorngo.ru',
+        description:
+          '\u0417\u0430\u043f\u0443\u0441\u0442\u0438\u043b \u0441\u0430\u0439\u0442 \u043c\u0430\u0433\u0430\u0437\u0438\u043d\u0430 \u0438 Telegram Mini App, \u0441\u0432\u044f\u0437\u0430\u0432 \u043a\u0430\u0442\u0430\u043b\u043e\u0433, \u0437\u0430\u043a\u0430\u0437\u044b \u0438 \u043e\u043f\u043b\u0430\u0442\u0443 \u0432 \u0435\u0434\u0438\u043d\u0443\u044e \u0432\u043e\u0440\u043e\u043d\u043a\u0443.',
+        result: '\u041f\u0443\u0442\u044c \u0434\u043e \u0437\u0430\u043a\u0430\u0437\u0430 \u0432 Mini App < 40 \u0441\u0435\u043a',
+        stack: ['React', 'Telegram WebApp', 'Go', 'PostgreSQL']
+      },
+      {
+        type: 'CRM \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044f',
+        title: 'AMOcrm x Platrum',
+        url: '#about',
+        description:
+          '\u0420\u0435\u0430\u043b\u0438\u0437\u043e\u0432\u0430\u043b \u043f\u0435\u0440\u0435\u0434\u0430\u0447\u0443 \u043f\u0440\u044f\u043c\u044b\u0445 \u0440\u0430\u0441\u0445\u043e\u0434\u043e\u0432 \u0438\u0437 \u0441\u0434\u0435\u043b\u043a\u0438 AMOcrm \u0432 \u043c\u043e\u0434\u0443\u043b\u044c \u0424\u0438\u043d\u0430\u043d\u0441\u044b Platrum \u0447\u0435\u0440\u0435\u0437 API + webhooks.',
+        result: '\u0410\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044f \u043e\u0442\u0447\u0435\u0442\u043d\u043e\u0441\u0442\u0438, -6 \u0447\u0430\u0441\u043e\u0432 \u0440\u0443\u0447\u043d\u043e\u0439 \u0440\u0430\u0431\u043e\u0442\u044b \u0432 \u043d\u0435\u0434\u0435\u043b\u044e',
+        stack: ['AMOcrm API', 'Platrum API', 'Webhooks', 'Node.js']
+      }
+    ],
+    services: [
+      '\u041f\u043e\u043b\u043d\u044b\u0439 \u0446\u0438\u043a\u043b: \u0438\u0441\u0441\u043b\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u0435, UI/UX, frontend, backend, \u0440\u0435\u043b\u0438\u0437.',
+      '\u0421\u0438\u0441\u0442\u0435\u043c\u044b \u0434\u043b\u044f e-commerce: \u043a\u0430\u0442\u0430\u043b\u043e\u0433, \u043a\u043e\u0440\u0437\u0438\u043d\u0430, \u043e\u043f\u043b\u0430\u0442\u044b, CRM-\u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438.',
+      '\u0418\u043c\u0438\u0434\u0436\u0435\u0432\u044b\u0435 \u0441\u0430\u0439\u0442\u044b \u0441\u043e \u0441\u0438\u043b\u044c\u043d\u043e\u0439 motion-\u043f\u043e\u0434\u0430\u0447\u0435\u0439 \u0438 \u043f\u0440\u043e\u0434\u0443\u043c\u0430\u043d\u043d\u044b\u043c UX.',
+      'Telegram Mini Apps \u0438 \u0431\u043e\u0442\u044b \u043f\u043e\u0434 \u0437\u0430\u043a\u0430\u0437\u044b, \u043f\u043e\u0434\u043f\u0438\u0441\u043a\u0438, \u043b\u043e\u0433\u0438\u0441\u0442\u0438\u043a\u0443.',
+      '\u041e\u043f\u0442\u0438\u043c\u0438\u0437\u0430\u0446\u0438\u044f \u0441\u043a\u043e\u0440\u043e\u0441\u0442\u0438, Core Web Vitals \u0438 \u0441\u0442\u0430\u0431\u0438\u043b\u044c\u043d\u043e\u0441\u0442\u0438 \u043f\u0440\u043e\u0434\u0430.'
+    ],
+    automations: [
+      'AMOcrm -> Platrum: \u0430\u0432\u0442\u043e\u043f\u0435\u0440\u0435\u0434\u0430\u0447\u0430 \u0440\u0430\u0441\u0445\u043e\u0434\u043e\u0432 (\u0437\u0430\u0440\u043f\u043b\u0430\u0442\u0430, \u043c\u0430\u0442\u0435\u0440\u0438\u0430\u043b\u044b, \u0413\u0421\u041c, \u043f\u0440\u043e\u0447\u0438\u0435).',
+      '@Dodologistic_bot: \u0432\u044b\u043a\u0443\u043f \u0438 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u0430 \u0442\u043e\u0432\u0430\u0440\u043e\u0432 \u0438\u0437 POIZON.',
+      '@ClevVPN_bot: \u043f\u043e\u0434\u043f\u0438\u0441\u043a\u0430 \u0438 \u0443\u043f\u0440\u0430\u0432\u043b\u0435\u043d\u0438\u0435 VPN \u0434\u043e\u0441\u0442\u0443\u043f\u043e\u043c.',
+      '@NextGenVPN_bot: \u0431\u0435\u0437\u043b\u0438\u043c\u0438\u0442\u043d\u044b\u0439 VPN \u0441 \u0430\u0432\u0442\u043e\u0432\u044b\u0434\u0430\u0447\u0435\u0439 \u043a\u043b\u044e\u0447\u0435\u0439.',
+      '@monoflore_bot + t.me/monoflore: \u0446\u0432\u0435\u0442\u044b \u0441 \u0434\u043e\u0441\u0442\u0430\u0432\u043a\u043e\u0439 \u043f\u043e \u041c\u043e\u0441\u043a\u0432\u0435.'
+    ]
+  },
+  en: {
+    metaTitle: 'Maxim qwuorty | Fullstack Developer',
+    metaDescription:
+      'Portfolio of Maxim qwuorty: design + fullstack delivery for e-commerce, cultural projects, Telegram Mini Apps and automations.',
+    ui: {
+      'preloader.label': 'Loading portfolio',
+      'nav.home': 'Home',
+      'nav.work': 'Work',
+      'nav.about': 'About',
+      'nav.contact': 'Contact',
+      'hero.kicker': 'Design + Fullstack',
+      'hero.line1': 'I build digital products',
+      'hero.line2': 'that feel premium,',
+      'hero.line3': 'convert and scale.',
+      'hero.text':
+        'I design and develop websites, stores, museum platforms, Telegram Mini Apps and business automations end-to-end.',
+      'hero.cta1': 'View projects',
+      'hero.cta2': 'Start project',
+      'stats.websites': 'Major web projects',
+      'stats.bots': 'Telegram bots',
+      'stats.fullcycle': 'Full cycle: design + fullstack',
+      'work.kicker': 'Selected Work',
+      'work.title': 'Websites, stores and digital platforms',
+      'about.kicker': 'What I Do',
+      'about.title': 'Fullstack delivery with product mindset',
+      'about.serviceTitle': 'Core services',
+      'about.automationTitle': 'Automations and bots',
+      'contact.kicker': 'Contact',
+      'contact.title': 'Need design + fullstack in one hands?',
+      'contact.text': 'Send your scope and I will return architecture, timeline and implementation plan.',
+      'footer.top': 'Back to top',
+      resultLabel: 'Result'
+    },
+    projects: [
+      {
+        type: 'Bookstore e-commerce',
+        title: 'Neformalnost',
+        url: 'https://neformalnost.ru/',
+        description:
+          'Designed and built the full digital stack: catalog, search, checkout, CMS and logistics workflow.',
+        result: 'LCP ~1.7s, checkout conversion growth +27%',
+        stack: ['Next.js', 'Node.js', 'PostgreSQL', 'Docker']
+      },
+      {
+        type: 'Brand e-commerce',
+        title: 'Kitchen Ceremony',
+        url: 'https://kitchenceremony.com/',
+        description:
+          'Built a premium brand experience with campaign landing flows, product storytelling and editable content.',
+        result: 'Ultima Yandex Food campaign launch, repeat sessions +34%',
+        stack: ['Next.js', 'Headless CMS', 'Node API', 'Vercel']
+      },
+      {
+        type: 'Museum platform',
+        title: 'Museum AZ',
+        url: 'https://museum-az.com/',
+        description:
+          'Delivered a modern museum website: exhibitions, events, navigation and rich content editing tools.',
+        result: 'Online engagement growth +41% during season campaigns',
+        stack: ['Nuxt', 'Node.js', 'Strapi', 'PostgreSQL']
+      },
+      {
+        type: 'Sneaker marketplace',
+        title: 'GOAT',
+        url: 'https://www.goat.com/',
+        description:
+          'Implemented high-load storefront patterns for catalog pages, product cards and purchase funnels.',
+        result: 'Stable Lighthouse 95+ on key storefront pages',
+        stack: ['React', 'Node.js', 'GraphQL', 'Redis']
+      },
+      {
+        type: 'Restaurant websites',
+        title: 'Flaner Moscow',
+        url: 'https://flanermoscow.ru/',
+        description:
+          'Created premium web presence for two restaurant concepts with booking flow, menu and event pages.',
+        result: 'Reservation requests growth +33% after relaunch',
+        stack: ['Next.js', 'Node.js', 'PostgreSQL', 'Nginx']
+      },
+      {
+        type: 'Store + Mini App',
+        title: 'Unicorn GO',
+        url: 'https://unicorngo.ru',
+        description:
+          'Launched e-commerce website and Telegram Mini App with connected catalog, checkout and payment flow.',
+        result: 'Order path in Mini App under 40 seconds',
+        stack: ['React', 'Telegram WebApp', 'Go', 'PostgreSQL']
+      },
+      {
+        type: 'CRM integration',
+        title: 'AMOcrm x Platrum',
+        url: '#about',
+        description:
+          'Implemented webhook + API integration to push direct expenses from AMOcrm deals to Platrum Finance module.',
+        result: 'Automated reporting, around 6 hours saved weekly',
+        stack: ['AMOcrm API', 'Platrum API', 'Webhooks', 'Node.js']
+      }
+    ],
+    services: [
+      'Full-cycle delivery: discovery, UI/UX, frontend, backend and release.',
+      'E-commerce systems: catalog, checkout, payments and CRM integrations.',
+      'Brand websites with strong motion language and conversion-ready UX.',
+      'Telegram Mini Apps and bots for sales, subscriptions and logistics.',
+      'Performance optimization, Core Web Vitals and production stability.'
+    ],
+    automations: [
+      'AMOcrm -> Platrum: automated transfer of direct expense fields.',
+      '@Dodologistic_bot: POIZON sourcing and delivery automation.',
+      '@ClevVPN_bot: subscription and VPN access management.',
+      '@NextGenVPN_bot: unlimited VPN access provisioning flow.',
+      '@monoflore_bot + t.me/monoflore: flower delivery flow for Moscow.'
+    ]
   }
 };
 
-let currentLang = 'ru';
-let progress = 0;
-let appStarted = false;
+let currentLanguage = DEFAULT_LANGUAGE;
+let transitionLocked = false;
+let preloaderProgress = 0;
 
-const detectLanguageFromPath = () => {
-  const match = window.location.pathname.match(LANGUAGE_PATH_RE);
+const detectLanguageFromPath = (pathname = window.location.pathname) => {
+  const match = pathname.match(LANGUAGE_PATH_RE);
   return match ? match[1] : null;
 };
 
-const stripLanguagePrefix = (path) => {
-  const stripped = path.replace(LANGUAGE_PATH_RE, '');
+const stripLanguageFromPath = (pathname = window.location.pathname) => {
+  const stripped = pathname.replace(LANGUAGE_PATH_RE, '');
   return stripped === '' ? '/' : stripped;
 };
 
-const buildPathForLanguage = (lang, path = window.location.pathname) => {
-  const basePath = stripLanguagePrefix(path);
+const buildLanguagePath = (lang, pathname = window.location.pathname) => {
+  const basePath = stripLanguageFromPath(pathname);
   return basePath === '/' ? `/${lang}` : `/${lang}${basePath}`;
 };
 
 const syncLanguagePath = (lang, replaceHistory) => {
-  const nextPath = buildPathForLanguage(lang);
-  const nextUrl = `${nextPath}${window.location.search}${window.location.hash}`;
-  const currentUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-
-  if (nextUrl !== currentUrl) {
-    const historyAction = replaceHistory ? 'replaceState' : 'pushState';
-    window.history[historyAction]({}, '', nextUrl);
-  }
-};
-
-const setMeta = (langPack) => {
-  document.title = langPack.title;
-  const metaDescription = document.querySelector('meta[name="description"]');
-  if (metaDescription) {
-    metaDescription.setAttribute('content', langPack.description);
-  }
-};
-
-const applyTranslations = (lang) => {
-  const langPack = translations[lang] || translations.ru;
-  document.documentElement.lang = lang;
-  setMeta(langPack);
-
-  document.querySelectorAll('[data-i18n]').forEach((element) => {
-    const key = element.dataset.i18n;
-    const translatedText = langPack.strings[key];
-    if (typeof translatedText === 'string') {
-      element.textContent = translatedText;
-    }
-  });
-
-  if (langSwitch) {
-    const switchLabel = lang === 'ru' ? 'EN' : 'RU';
-    const ariaLabel = lang === 'ru' ? 'Switch to English' : 'Switch to Russian';
-    langSwitch.textContent = switchLabel;
-    langSwitch.setAttribute('aria-label', ariaLabel);
-  }
-};
-
-const tickLoader = () => {
-  progress += Math.random() * 14;
-  if (progress >= 100) {
-    progress = 100;
-    loaderBar.style.width = '100%';
-    setTimeout(() => {
-      loader.classList.add('is-hidden');
-      document.body.style.overflow = 'auto';
-    }, 250);
+  const targetPath = buildLanguagePath(lang);
+  if (targetPath === window.location.pathname) {
     return;
   }
 
-  loaderBar.style.width = `${progress.toFixed(1)}%`;
-  setTimeout(tickLoader, 120);
+  const nextUrl = `${targetPath}${window.location.search}${window.location.hash}`;
+  const historyMethod = replaceHistory ? 'replaceState' : 'pushState';
+  window.history[historyMethod]({}, '', nextUrl);
 };
 
-const runRevealObserver = () => {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.15 }
-  );
+const setMeta = (langData) => {
+  document.title = langData.metaTitle;
+  const description = document.querySelector('meta[name="description"]');
+  if (description) {
+    description.setAttribute('content', langData.metaDescription);
+  }
+};
 
-  revealItems.forEach((item, idx) => {
-    item.style.transitionDelay = `${Math.min(idx * 60, 240)}ms`;
-    observer.observe(item);
+const applyStaticTranslations = (ui) => {
+  document.querySelectorAll('[data-i18n]').forEach((node) => {
+    const key = node.dataset.i18n;
+    if (Object.prototype.hasOwnProperty.call(ui, key)) {
+      node.textContent = ui[key];
+    }
   });
 };
 
-const animateCounter = (el) => {
-  const target = Number(el.dataset.counter) || 0;
-  const duration = 1100;
+const renderProjects = (langData) => {
+  projectList.innerHTML = langData.projects
+    .map((project, index) => {
+      const idx = String(index + 1).padStart(2, '0');
+      const stackHtml = project.stack.map((item) => `<li>${item}</li>`).join('');
+      return `
+        <article class="project-card" data-reveal data-tilt>
+          <a href="${project.url}" ${project.url.startsWith('#') ? '' : 'target="_blank" rel="noreferrer"'}>
+            <div class="project-index">${idx}</div>
+            <div class="project-meta">
+              <p class="project-type">${project.type}</p>
+              <h3 class="project-title">${project.title}</h3>
+              <p class="project-desc">${project.description}</p>
+              <ul class="project-stack">${stackHtml}</ul>
+            </div>
+            <div class="project-result">
+              <small>${langData.ui.resultLabel}</small>
+              <strong>${project.result}</strong>
+            </div>
+          </a>
+        </article>
+      `;
+    })
+    .join('');
+};
+
+const renderSimpleList = (container, items) => {
+  container.innerHTML = items.map((item) => `<li>${item}</li>`).join('');
+};
+
+const applyLanguage = (lang, replaceHistory) => {
+  const normalized = SUPPORTED_LANGUAGES.includes(lang) ? lang : DEFAULT_LANGUAGE;
+  currentLanguage = normalized;
+
+  const langData = DATA[normalized];
+  document.documentElement.lang = normalized;
+  setMeta(langData);
+  applyStaticTranslations(langData.ui);
+  renderProjects(langData);
+  renderSimpleList(serviceList, langData.services);
+  renderSimpleList(automationList, langData.automations);
+
+  const switchLabel = normalized === 'ru' ? 'EN' : 'RU';
+  const switchAria = normalized === 'ru' ? 'Switch to English' : 'Switch to Russian';
+  langSwitch.textContent = switchLabel;
+  langSwitch.setAttribute('aria-label', switchAria);
+
+  syncLanguagePath(normalized, replaceHistory);
+  bindRevealObserver();
+  bindTiltEffects();
+};
+
+const runPageTransition = (callback) => {
+  if (transitionLocked) {
+    callback();
+    return;
+  }
+
+  transitionLocked = true;
+  pageTransition.classList.add('is-active');
+
+  window.setTimeout(() => {
+    callback();
+  }, 250);
+
+  window.setTimeout(() => {
+    pageTransition.classList.remove('is-active');
+    transitionLocked = false;
+  }, 880);
+};
+
+const handleAnchorNavigation = (event) => {
+  const href = event.currentTarget.getAttribute('href');
+  if (!href || !href.startsWith('#')) {
+    return;
+  }
+
+  const target = document.querySelector(href);
+  if (!target) {
+    return;
+  }
+
+  event.preventDefault();
+  runPageTransition(() => {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+};
+
+const bindNavLinks = () => {
+  document.querySelectorAll('[data-nav-link]').forEach((link) => {
+    link.addEventListener('click', handleAnchorNavigation);
+  });
+};
+
+let revealObserver;
+const bindRevealObserver = () => {
+  if (!revealObserver) {
+    revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+  }
+
+  document.querySelectorAll('[data-reveal]').forEach((node, index) => {
+    if (node.dataset.revealBound === '1') {
+      return;
+    }
+
+    node.dataset.revealBound = '1';
+    node.style.transitionDelay = `${Math.min(index * 55, 260)}ms`;
+    revealObserver.observe(node);
+  });
+};
+
+let counterObserver;
+const animateCounter = (node) => {
+  const target = Number(node.dataset.counter || 0);
+  const duration = 1200;
   const start = performance.now();
 
   const draw = (time) => {
-    const pct = Math.min((time - start) / duration, 1);
-    const eased = 1 - Math.pow(1 - pct, 3);
-    el.textContent = String(Math.floor(eased * target));
-    if (pct < 1) requestAnimationFrame(draw);
+    const t = Math.min((time - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    node.textContent = String(Math.floor(target * eased));
+    if (t < 1) {
+      requestAnimationFrame(draw);
+    }
   };
 
   requestAnimationFrame(draw);
 };
 
-const runCounterObserver = () => {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          animateCounter(entry.target);
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.4 }
-  );
+const bindCounterObserver = () => {
+  if (!counterObserver) {
+    counterObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateCounter(entry.target);
+            counterObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.45 }
+    );
+  }
 
-  counters.forEach((counter) => observer.observe(counter));
+  document.querySelectorAll('[data-counter]').forEach((node) => {
+    if (node.dataset.counterBound === '1') {
+      return;
+    }
+    node.dataset.counterBound = '1';
+    counterObserver.observe(node);
+  });
 };
 
-const setupCursor = () => {
-  if (window.matchMedia('(pointer: coarse)').matches) return;
+const bindCursor = () => {
+  if (window.matchMedia('(pointer: coarse)').matches) {
+    return;
+  }
 
   let x = window.innerWidth / 2;
   let y = window.innerHeight / 2;
-  let currentX = x;
-  let currentY = y;
+  let cx = x;
+  let cy = y;
 
   window.addEventListener('mousemove', (event) => {
     x = event.clientX;
     y = event.clientY;
   });
 
-  const loop = () => {
-    currentX += (x - currentX) * 0.18;
-    currentY += (y - currentY) * 0.18;
-    cursor.style.transform = `translate(${currentX}px, ${currentY}px) translate(-50%, -50%)`;
-    requestAnimationFrame(loop);
+  const frame = () => {
+    cx += (x - cx) * 0.18;
+    cy += (y - cy) * 0.18;
+    cursor.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+    requestAnimationFrame(frame);
   };
 
-  loop();
+  frame();
 
-  document.querySelectorAll('a, button, .card').forEach((el) => {
-    el.addEventListener('mouseenter', () => cursor.classList.add('is-active'));
-    el.addEventListener('mouseleave', () => cursor.classList.remove('is-active'));
+  document.addEventListener('mouseover', (event) => {
+    if (event.target.closest('a, button, .project-card')) {
+      cursor.classList.add('is-active');
+    }
+  });
+
+  document.addEventListener('mouseout', (event) => {
+    if (event.target.closest('a, button, .project-card')) {
+      cursor.classList.remove('is-active');
+    }
   });
 };
 
-const setupMagnetic = () => {
-  magneticItems.forEach((item) => {
-    item.addEventListener('mousemove', (event) => {
-      const rect = item.getBoundingClientRect();
-      const x = event.clientX - rect.left - rect.width / 2;
-      const y = event.clientY - rect.top - rect.height / 2;
-      item.style.transform = `translate(${x * 0.08}px, ${y * 0.08}px)`;
+const bindMagneticButtons = () => {
+  document.querySelectorAll('.magnetic').forEach((node) => {
+    if (node.dataset.magneticBound === '1') {
+      return;
+    }
+    node.dataset.magneticBound = '1';
+
+    node.addEventListener('mousemove', (event) => {
+      const rect = node.getBoundingClientRect();
+      const dx = event.clientX - rect.left - rect.width / 2;
+      const dy = event.clientY - rect.top - rect.height / 2;
+      node.style.transform = `translate(${dx * 0.08}px, ${dy * 0.08}px)`;
     });
 
-    item.addEventListener('mouseleave', () => {
-      item.style.transform = 'translate(0, 0)';
+    node.addEventListener('mouseleave', () => {
+      node.style.transform = 'translate(0, 0)';
     });
   });
 };
 
-const setupTiltCards = () => {
-  tiltCards.forEach((card) => {
+const bindTiltEffects = () => {
+  document.querySelectorAll('[data-tilt]').forEach((card) => {
+    if (card.dataset.tiltBound === '1') {
+      return;
+    }
+    card.dataset.tiltBound = '1';
+
     card.addEventListener('mousemove', (event) => {
       const rect = card.getBoundingClientRect();
-      const percentX = (event.clientX - rect.left) / rect.width;
-      const percentY = (event.clientY - rect.top) / rect.height;
-
-      const rotY = (percentX - 0.5) * 8;
-      const rotX = (0.5 - percentY) * 8;
-
-      card.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-      card.style.setProperty('--mx', `${percentX * 100}%`);
-      card.style.setProperty('--my', `${percentY * 100}%`);
+      const px = (event.clientX - rect.left) / rect.width;
+      const py = (event.clientY - rect.top) / rect.height;
+      const rx = (0.5 - py) * 5;
+      const ry = (px - 0.5) * 5;
+      card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg)`;
     });
 
     card.addEventListener('mouseleave', () => {
@@ -319,70 +532,72 @@ const setupTiltCards = () => {
 };
 
 const setYear = () => {
-  const yearEl = document.getElementById('year');
-  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
-};
-
-const startExperience = () => {
-  if (appStarted) return;
-  appStarted = true;
-
-  progress = 0;
-  loaderBar.style.width = '0%';
-  loader.classList.remove('is-hidden');
-
-  document.body.style.overflow = 'hidden';
-  setupCursor();
-  setupMagnetic();
-  setupTiltCards();
-  runRevealObserver();
-  runCounterObserver();
-  tickLoader();
-};
-
-const chooseLanguage = (lang, replaceHistory) => {
-  if (!SUPPORTED_LANGUAGES.includes(lang)) {
-    return;
+  const yearNode = document.getElementById('year');
+  if (yearNode) {
+    yearNode.textContent = String(new Date().getFullYear());
   }
+};
 
-  currentLang = lang;
-  applyTranslations(lang);
-  syncLanguagePath(lang, replaceHistory);
+const runPreloader = () => {
+  document.body.style.overflow = 'hidden';
+
+  const tick = () => {
+    preloaderProgress += Math.random() * 13 + 5;
+    if (preloaderProgress >= 100) {
+      preloaderProgress = 100;
+      preloaderBar.style.width = '100%';
+      preloaderPercent.textContent = '100%';
+
+      window.setTimeout(() => {
+        preloader.classList.add('is-hidden');
+        document.body.style.overflow = 'auto';
+      }, 260);
+      return;
+    }
+
+    preloaderBar.style.width = `${preloaderProgress.toFixed(1)}%`;
+    preloaderPercent.textContent = `${Math.floor(preloaderProgress)}%`;
+    window.setTimeout(tick, 90);
+  };
+
+  tick();
 };
 
 const resolveInitialLanguage = () => {
-  const pathLanguage = detectLanguageFromPath();
-  if (pathLanguage) {
-    return pathLanguage;
+  const pathLang = detectLanguageFromPath();
+  if (pathLang && SUPPORTED_LANGUAGES.includes(pathLang)) {
+    return pathLang;
   }
-  syncLanguagePath('ru', true);
-  return 'ru';
+
+  syncLanguagePath(DEFAULT_LANGUAGE, true);
+  return DEFAULT_LANGUAGE;
 };
 
+bindNavLinks();
+bindCursor();
+bindMagneticButtons();
 setYear();
-document.body.style.overflow = 'hidden';
 
 const initialLanguage = resolveInitialLanguage();
-chooseLanguage(initialLanguage, true);
-startExperience();
+applyLanguage(initialLanguage, true);
+bindCounterObserver();
+runPreloader();
 
-if (langSwitch) {
-  langSwitch.addEventListener('click', () => {
-    const nextLang = currentLang === 'ru' ? 'en' : 'ru';
-    chooseLanguage(nextLang, false);
+langSwitch.addEventListener('click', () => {
+  const nextLanguage = currentLanguage === 'ru' ? 'en' : 'ru';
+  runPageTransition(() => {
+    applyLanguage(nextLanguage, false);
   });
-}
+});
 
 window.addEventListener('popstate', () => {
-  const pathLanguage = detectLanguageFromPath();
-  const normalizedLanguage = pathLanguage || 'ru';
-
-  if (!pathLanguage) {
-    syncLanguagePath('ru', true);
+  const pathLang = detectLanguageFromPath();
+  if (!pathLang) {
+    applyLanguage(DEFAULT_LANGUAGE, true);
+    return;
   }
 
-  if (normalizedLanguage !== currentLang) {
-    currentLang = normalizedLanguage;
-    applyTranslations(currentLang);
+  if (pathLang !== currentLanguage) {
+    applyLanguage(pathLang, true);
   }
 });

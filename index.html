@@ -3,71 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Alex Voss | Fullstack Developer</title>
+    <title>Maxim Qwuorty | Fullstack Developer</title>
     <meta
       name="description"
-      content="Dennis-inspired portfolio skeleton for a fullstack developer focused on product delivery and performance."
+      content="Portfolio of Maxim Qwuorty, fullstack developer focused on design-driven digital products, e-commerce and automations."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Manrope:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <div class="loader is-hidden" aria-hidden="true">
-      <div class="loader__track">
-        <div class="loader__bar"></div>
+    <div class="preloader" id="preloader" aria-hidden="true">
+      <div class="preloader__inner">
+        <p class="preloader__label" data-i18n="preloader.label">Loading portfolio</p>
+        <p class="preloader__percent" id="preloaderPercent">0%</p>
+        <div class="preloader__track"><div class="preloader__bar" id="preloaderBar"></div></div>
       </div>
-      <p class="loader__label" data-i18n="loader.label">Booting portfolio engine...</p>
     </div>
 
-    <div class="cursor" aria-hidden="true"></div>
+    <div class="page-transition" id="pageTransition" aria-hidden="true"></div>
     <div class="grain" aria-hidden="true"></div>
+    <div class="cursor" aria-hidden="true"></div>
 
     <header class="site-header">
-      <a class="brand" href="#home">ALEX / FS</a>
+      <a class="brand" href="#home">MAXIM QWUORTY</a>
       <nav class="nav">
-        <a href="#work" data-i18n="nav.work">Work</a>
-        <a href="#about" data-i18n="nav.about">About</a>
-        <a href="#contact" data-i18n="nav.contact">Contact</a>
+        <a href="#home" data-nav-link data-i18n="nav.home">Home</a>
+        <a href="#work" data-nav-link data-i18n="nav.work">Work</a>
+        <a href="#about" data-nav-link data-i18n="nav.about">About</a>
+        <a href="#contact" data-nav-link data-i18n="nav.contact">Contact</a>
       </nav>
-      <button class="lang-switch" id="langSwitch" type="button" aria-label="Switch language">RU</button>
-      <a class="header-cta magnetic" href="#contact" data-i18n="header.cta">Start Project</a>
+      <button id="langSwitch" class="lang-switch" type="button" aria-label="Switch language">EN</button>
     </header>
 
     <main>
       <section class="hero" id="home">
-        <div class="hero__bg-blur"></div>
-        <p class="hero__eyebrow" data-reveal data-i18n="hero.eyebrow">FULLSTACK DEVELOPER</p>
+        <p class="hero__kicker" data-reveal data-i18n="hero.kicker">Design + Fullstack</p>
         <h1 class="hero__title" data-reveal>
-          <span data-i18n="hero.title.line1">I build</span>
-          <span data-i18n="hero.title.line2">products that ship</span>
-          <span data-i18n="hero.title.line3">fast and scale clean.</span>
+          <span data-i18n="hero.line1">I build digital products</span>
+          <span data-i18n="hero.line2">that feel premium,</span>
+          <span data-i18n="hero.line3">convert and scale.</span>
         </h1>
         <p class="hero__text" data-reveal data-i18n="hero.text">
-          Next.js, Node.js, PostgreSQL, Docker. I help founders launch and grow SaaS,
-          internal systems, and customer-facing web apps.
+          I design and develop websites, e-commerce platforms, museum experiences,
+          mini apps and automation systems end-to-end.
         </p>
         <div class="hero__actions" data-reveal>
-          <a class="btn btn--solid magnetic" href="#work" data-i18n="hero.btn.work">See Cases</a>
-          <a class="btn btn--ghost magnetic" href="#contact" data-i18n="hero.btn.contact">Book a call</a>
+          <a class="btn btn--solid magnetic" href="#work" data-nav-link data-i18n="hero.cta1">View projects</a>
+          <a class="btn btn--ghost magnetic" href="#contact" data-nav-link data-i18n="hero.cta2">Start project</a>
         </div>
-
-        <ul class="stats" data-reveal>
+        <ul class="hero__stats" data-reveal>
           <li>
-            <strong data-counter="32">0</strong>
-            <span data-i18n="stats.projects">Projects delivered</span>
+            <strong data-counter="7">0</strong>
+            <span data-i18n="stats.websites">Major web projects</span>
           </li>
           <li>
-            <strong data-counter="12">0</strong>
-            <span data-i18n="stats.products">Products from scratch</span>
+            <strong data-counter="5">0</strong>
+            <span data-i18n="stats.bots">Telegram bots</span>
           </li>
           <li>
-            <strong data-counter="99">0</strong>
-            <span data-i18n="stats.lighthouse">Avg. Lighthouse score</span>
+            <strong data-counter="1">0</strong>
+            <span data-i18n="stats.fullcycle">Full cycle: design + fullstack</span>
           </li>
         </ul>
       </section>
@@ -75,114 +75,48 @@
       <section class="work" id="work">
         <div class="section-head" data-reveal>
           <p class="section-kicker" data-i18n="work.kicker">Selected Work</p>
-          <h2 data-i18n="work.title">Fullstack case studies</h2>
+          <h2 data-i18n="work.title">Websites, stores and digital platforms</h2>
         </div>
-
-        <div class="work-grid">
-          <article class="card" data-tilt data-reveal>
-            <p class="card__tag" data-i18n="card1.tag">B2B SaaS</p>
-            <h3 data-i18n="card1.title">Revenue Ops Platform</h3>
-            <p data-i18n="card1.text">Built a role-based dashboard with custom analytics and Stripe billing flows.</p>
-            <ul>
-              <li data-i18n="card1.li1">Next.js + NestJS</li>
-              <li data-i18n="card1.li2">PostgreSQL + Redis</li>
-              <li data-i18n="card1.li3">Launch in 21 days</li>
-            </ul>
-          </article>
-
-          <article class="card" data-tilt data-reveal>
-            <p class="card__tag" data-i18n="card2.tag">Marketplace</p>
-            <h3 data-i18n="card2.title">Vendor Control Hub</h3>
-            <p data-i18n="card2.text">Replaced manual workflows with automations for invoices, stock, and logistics.</p>
-            <ul>
-              <li data-i18n="card2.li1">React + Node API</li>
-              <li data-i18n="card2.li2">Queue workers</li>
-              <li data-i18n="card2.li3">-64% manual ops time</li>
-            </ul>
-          </article>
-
-          <article class="card" data-tilt data-reveal>
-            <p class="card__tag" data-i18n="card3.tag">Fintech</p>
-            <h3 data-i18n="card3.title">Client Onboarding App</h3>
-            <p data-i18n="card3.text">Implemented secure onboarding with document checks and audit logs.</p>
-            <ul>
-              <li data-i18n="card3.li1">Next.js + Go microservice</li>
-              <li data-i18n="card3.li2">Encrypted file storage</li>
-              <li data-i18n="card3.li3">4.9/5 internal rating</li>
-            </ul>
-          </article>
-
-          <article class="card" data-tilt data-reveal>
-            <p class="card__tag" data-i18n="card4.tag">Internal Tooling</p>
-            <h3 data-i18n="card4.title">Support Flow Engine</h3>
-            <p data-i18n="card4.text">Delivered a workflow builder to route tickets automatically across teams.</p>
-            <ul>
-              <li data-i18n="card4.li1">TypeScript mono-repo</li>
-              <li data-i18n="card4.li2">Real-time events</li>
-              <li data-i18n="card4.li3">+38% first-response speed</li>
-            </ul>
-          </article>
-        </div>
+        <div class="project-list" id="projectList"></div>
       </section>
 
       <section class="about" id="about">
         <div class="section-head" data-reveal>
-          <p class="section-kicker" data-i18n="about.kicker">What I Bring</p>
-          <h2 data-i18n="about.title">Engineering with product mindset</h2>
+          <p class="section-kicker" data-i18n="about.kicker">What I Do</p>
+          <h2 data-i18n="about.title">Fullstack delivery with product mindset</h2>
         </div>
 
-        <div class="about-layout">
-          <article class="about-copy" data-reveal>
-            <p data-i18n="about.p1">
-              I combine frontend craft, backend reliability, and deployment ownership.
-              You get one engineer who can turn ideas into production-ready software.
-            </p>
-            <p data-i18n="about.p2">
-              My process: audit, architecture, weekly milestones, measurable outcomes.
-            </p>
+        <div class="about-grid">
+          <article class="about-block" data-reveal>
+            <h3 data-i18n="about.serviceTitle">Core services</h3>
+            <ul class="about-list" id="serviceList"></ul>
           </article>
 
-          <ul class="stack" data-reveal>
-            <li>Next.js</li>
-            <li>React</li>
-            <li>Node.js</li>
-            <li>NestJS</li>
-            <li>PostgreSQL</li>
-            <li>MongoDB</li>
-            <li>Redis</li>
-            <li>Docker</li>
-            <li>Nginx</li>
-            <li>AWS/VPS</li>
-          </ul>
+          <article class="about-block" data-reveal>
+            <h3 data-i18n="about.automationTitle">Automations and bots</h3>
+            <ul class="about-list" id="automationList"></ul>
+          </article>
         </div>
       </section>
 
       <section class="contact" id="contact">
         <div class="contact__inner" data-reveal>
           <p class="section-kicker" data-i18n="contact.kicker">Contact</p>
-          <h2 data-i18n="contact.title">Need a fullstack partner for your next release?</h2>
+          <h2 data-i18n="contact.title">Need design + fullstack in one hands?</h2>
           <p data-i18n="contact.text">
-            Send your scope, and I will return architecture, timeline, and budget options
-            within 60 minutes.
+            Send your task and I will return architecture, timeline and implementation plan.
           </p>
           <div class="contact__actions">
-            <a class="btn btn--solid magnetic" href="mailto:alex@portfolio.dev">alex@portfolio.dev</a>
-            <a
-              class="btn btn--ghost magnetic"
-              href="https://t.me/qwuorty"
-              target="_blank"
-              rel="noreferrer"
-              data-i18n="contact.telegram"
-              >Telegram</a
-            >
+            <a class="btn btn--solid magnetic" href="https://t.me/qwuorty" target="_blank" rel="noreferrer">@qwuorty</a>
+            <a class="btn btn--ghost magnetic" href="https://t.me/unicorn_go_bot" target="_blank" rel="noreferrer">@unicorn_go_bot</a>
           </div>
         </div>
       </section>
     </main>
 
     <footer class="footer">
-      <p>&copy; <span id="year"></span> Alex Voss</p>
-      <a href="#home" data-i18n="footer.top">Back to top</a>
+      <p>&copy; <span id="year"></span> Maxim qwuorty</p>
+      <a href="#home" data-nav-link data-i18n="footer.top">Back to top</a>
     </footer>
 
     <script src="/app.js"></script>

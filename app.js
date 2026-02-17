@@ -1,4 +1,4 @@
-const preloader = document.getElementById('preloader');
+﻿const preloader = document.getElementById('preloader');
 const preloaderBar = document.getElementById('preloaderBar');
 const preloaderValue = document.getElementById('preloaderValue');
 const pageTransition = document.getElementById('pageTransition');
@@ -13,6 +13,8 @@ const cursor = document.querySelector('.cursor');
 const workHoverPreview = document.getElementById('workHoverPreview');
 const workHoverImage = document.getElementById('workHoverImage');
 const workHoverTitle = document.getElementById('workHoverTitle');
+const workHoverType = document.getElementById('workHoverType');
+const workHoverResult = document.getElementById('workHoverResult');
 
 const SUPPORTED_LANGUAGES = ['ru', 'en'];
 const DEFAULT_LANGUAGE = 'ru';
@@ -41,6 +43,9 @@ const UI = {
       'hero.cta.contact': '\u041d\u0430\u0447\u0430\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442',
       'work.kicker': '\u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435 \u043a\u0435\u0439\u0441\u044b',
       'work.title': '\u041f\u0440\u043e\u0435\u043a\u0442\u044b',
+      'work.head.project': '\u041f\u0440\u043e\u0435\u043a\u0442',
+      'work.head.type': '\u0422\u0438\u043f',
+      'work.head.year': '\u0413\u043e\u0434',
       'about.kicker': '\u041e\u0431\u043e \u043c\u043d\u0435',
       'about.title': '\u0423\u0441\u043b\u0443\u0433\u0438 \u0438 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044f',
       'about.core': '\u041a\u043b\u044e\u0447\u0435\u0432\u044b\u0435 \u0443\u0441\u043b\u0443\u0433\u0438',
@@ -73,6 +78,9 @@ const UI = {
       'hero.cta.contact': 'Start project',
       'work.kicker': 'Selected Work',
       'work.title': 'Projects',
+      'work.head.project': 'Project',
+      'work.head.type': 'Type',
+      'work.head.year': 'Year',
       'about.kicker': 'About',
       'about.title': 'Services and automation',
       'about.core': 'Core services',
@@ -89,44 +97,86 @@ const PROJECTS = [
   {
     slug: 'neformalnost',
     url: 'https://neformalnost.ru/',
-    title: { ru: '\u041d\u0435\u0444\u043e\u0440\u043c\u0430\u043b\u044c\u043d\u043e\u0441\u0442\u044c', en: 'Neformalnost' },
-    type: { ru: '\u041a\u043d\u0438\u0436\u043d\u044b\u0439 e-commerce', en: 'Bookstore e-commerce' }
+    title: { ru: 'Neformalnost', en: 'Neformalnost' },
+    meta: { ru: 'Bookstore, design plus fullstack', en: 'Bookstore, design plus fullstack' },
+    type: { ru: 'E-commerce', en: 'E-commerce' },
+    year: '2024',
+    result: {
+      ru: 'Checkout flow simplified and SEO crawlability improved.',
+      en: 'Checkout path was shortened and SEO crawlability improved.'
+    }
   },
   {
     slug: 'kitchen-ceremony',
     url: 'https://kitchenceremony.com/',
     title: { ru: 'Kitchen Ceremony', en: 'Kitchen Ceremony' },
-    type: { ru: '\u0411\u0440\u0435\u043d\u0434\u043e\u0432\u044b\u0439 e-commerce', en: 'Brand e-commerce' }
+    meta: { ru: 'Spice brand plus digital campaign', en: 'Spice brand plus digital campaign' },
+    type: { ru: 'Brand commerce', en: 'Brand commerce' },
+    year: '2024',
+    result: {
+      ru: 'Audience engagement and recognition increased during campaign.',
+      en: 'Brand recognition and audience engagement increased during campaign.'
+    }
   },
   {
     slug: 'museum-az',
     url: 'https://museum-az.com/',
-    title: { ru: '\u041c\u0443\u0437\u0435\u0439 AZ', en: 'Museum AZ' },
-    type: { ru: '\u041c\u0443\u0437\u0435\u0439\u043d\u0430\u044f \u043f\u043b\u0430\u0442\u0444\u043e\u0440\u043c\u0430', en: 'Museum platform' }
+    title: { ru: 'Museum AZ', en: 'Museum AZ' },
+    meta: { ru: 'Cultural platform, design plus fullstack', en: 'Cultural platform, design plus fullstack' },
+    type: { ru: 'Museum platform', en: 'Museum platform' },
+    year: '2023',
+    result: {
+      ru: 'Exhibition and event navigation became clearer for visitors.',
+      en: 'Exhibition and event navigation became clearer for visitors.'
+    }
   },
   {
     slug: 'goat',
     url: 'https://www.goat.com/',
     title: { ru: 'GOAT', en: 'GOAT' },
-    type: { ru: '\u041e\u0431\u0443\u0432\u043d\u043e\u0439 marketplace', en: 'Sneaker marketplace' }
+    meta: { ru: 'Sneaker marketplace, design plus fullstack', en: 'Sneaker marketplace, design plus fullstack' },
+    type: { ru: 'Marketplace', en: 'Marketplace' },
+    year: '2023',
+    result: {
+      ru: 'Catalog structure and user flow performance improved.',
+      en: 'Catalog structure and user flow performance were improved.'
+    }
   },
   {
     slug: 'flaner-moscow',
     url: 'https://flanermoscow.ru/',
     title: { ru: 'Flaner Moscow', en: 'Flaner Moscow' },
-    type: { ru: '\u0421\u0430\u0439\u0442\u044b \u0440\u0435\u0441\u0442\u043e\u0440\u0430\u043d\u043e\u0432', en: 'Restaurant websites' }
+    meta: { ru: 'Two-restaurant website, design plus fullstack', en: 'Two-restaurant website, design plus fullstack' },
+    type: { ru: 'Hospitality', en: 'Hospitality' },
+    year: '2024',
+    result: {
+      ru: 'Brand feel improved and reservation path became faster.',
+      en: 'Website strengthened branding and simplified reservation path.'
+    }
   },
   {
     slug: 'unicorngo',
     url: 'https://unicorngo.ru',
     title: { ru: 'Unicorn GO', en: 'Unicorn GO' },
-    type: { ru: '\u041c\u0430\u0433\u0430\u0437\u0438\u043d + Telegram Mini App', en: 'Store + Telegram Mini App' }
+    meta: { ru: 'Shoe store plus Telegram Mini App', en: 'Shoe store plus Telegram Mini App' },
+    type: { ru: 'Web + Telegram', en: 'Web plus Telegram' },
+    year: '2025',
+    result: {
+      ru: 'Unified sales funnel between website and Telegram flow.',
+      en: 'Unified sales funnel between website and Telegram flow.'
+    }
   },
   {
     slug: 'amocrm-platrum',
     url: '#about',
     title: { ru: 'AMOcrm x Platrum', en: 'AMOcrm x Platrum' },
-    type: { ru: 'CRM \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u044f', en: 'CRM integration' }
+    meta: { ru: 'Deal expenses sync into finance module', en: 'Deal expenses sync into finance module' },
+    type: { ru: 'Automation', en: 'Automation' },
+    year: '2025',
+    result: {
+      ru: 'Manual work reduced and management accounting became faster.',
+      en: 'Manual work reduced and management accounting became faster.'
+    }
   }
 ];
 
@@ -218,13 +268,23 @@ const renderProjects = (lang) => {
     const externalAttrs = isExternal ? 'target="_blank" rel="noreferrer"' : '';
     return `
       <article class="work-row" data-reveal>
-        <a class="work-link" href="${project.url}" ${externalAttrs} data-preview="${preview}" data-preview-title="${project.title[lang]}">
+        <a
+          class="work-link"
+          href="${project.url}"
+          ${externalAttrs}
+          data-preview="${preview}"
+          data-preview-title="${project.title[lang]}"
+          data-preview-type="${project.type[lang]}"
+          data-preview-result="${project.result[lang]}"
+        >
           <span class="work-index">${index}</span>
           <div class="work-main">
             <h3 class="work-title">${project.title[lang]}</h3>
-            <p class="work-meta">${project.type[lang]}</p>
+            <p class="work-meta">${project.meta[lang]}</p>
           </div>
-          <span class="work-arrow">↗</span>
+          <p class="work-type">${project.type[lang]}</p>
+          <p class="work-year">${project.year}</p>
+          <span class="work-arrow">&#8599;</span>
         </a>
       </article>
     `;
@@ -406,22 +466,52 @@ const bindWorkPreview = () => {
     link.addEventListener('mouseenter', (event) => {
       const previewSrc = event.currentTarget.dataset.preview;
       const previewTitle = event.currentTarget.dataset.previewTitle;
+      const previewType = event.currentTarget.dataset.previewType;
+      const previewResult = event.currentTarget.dataset.previewResult;
+      const row = event.currentTarget.closest('.work-row');
+
+      if (row) {
+        row.classList.add('is-active');
+      }
+      workList.classList.add('is-hovering');
+
       workHoverImage.classList.remove('is-hidden');
       workHoverImage.src = previewSrc;
       workHoverImage.alt = previewTitle;
       workHoverTitle.textContent = previewTitle;
+      workHoverType.textContent = previewType || '';
+      workHoverResult.textContent = previewResult || '';
       workHoverPreview.classList.add('is-visible');
     });
 
     link.addEventListener('mousemove', (event) => {
-      workHoverPreview.style.left = `${event.clientX + 30}px`;
-      workHoverPreview.style.top = `${event.clientY + 18}px`;
+      const offsetX = 32;
+      const offsetY = 18;
+      const width = workHoverPreview.offsetWidth || 420;
+      const height = workHoverPreview.offsetHeight || 260;
+
+      const maxX = window.innerWidth - width - 18;
+      const maxY = window.innerHeight - height - 18;
+      const nextX = Math.max(18, Math.min(event.clientX + offsetX, maxX));
+      const nextY = Math.max(18, Math.min(event.clientY + offsetY, maxY));
+
+      workHoverPreview.style.left = `${nextX}px`;
+      workHoverPreview.style.top = `${nextY}px`;
     });
 
-    link.addEventListener('mouseleave', () => {
+    link.addEventListener('mouseleave', (event) => {
+      const row = event.currentTarget.closest('.work-row');
+      if (row) {
+        row.classList.remove('is-active');
+      }
+      workList.classList.remove('is-hovering');
       workHoverPreview.classList.remove('is-visible');
     });
   });
+
+  workHoverImage.onload = () => {
+    workHoverImage.classList.remove('is-hidden');
+  };
 
   workHoverImage.onerror = () => {
     workHoverImage.classList.add('is-hidden');
@@ -496,3 +586,4 @@ window.addEventListener('popstate', () => {
   const lang = detectLanguageFromPath();
   applyLanguage(lang || DEFAULT_LANGUAGE, true);
 });
+

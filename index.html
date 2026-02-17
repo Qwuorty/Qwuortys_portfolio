@@ -76,10 +76,19 @@
           <p class="section-kicker" data-i18n="work.kicker">Selected Work</p>
           <h2 data-i18n="work.title">Projects</h2>
         </div>
+        <div class="work-head" data-reveal>
+          <span data-i18n="work.head.project">Project</span>
+          <span data-i18n="work.head.type">Type</span>
+          <span data-i18n="work.head.year">Year</span>
+        </div>
         <div class="work-list" id="workList"></div>
         <div class="work-hover-preview" id="workHoverPreview" aria-hidden="true">
           <img id="workHoverImage" alt="Project preview" />
-          <p id="workHoverTitle">Project</p>
+          <div class="work-hover-meta">
+            <p id="workHoverTitle">Project</p>
+            <p id="workHoverType">Type</p>
+            <p id="workHoverResult">Result</p>
+          </div>
         </div>
       </section>
 

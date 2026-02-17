@@ -22,7 +22,7 @@ const LANGUAGE_PATH_RE = /^\/(ru|en)(?=\/|$)/;
 
 const UI = {
   ru: {
-    metaTitle: '\u041c\u0430\u043a\u0441\u0438\u043c qwuorty | Fullstack \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a',
+    metaTitle: 'qwuorty | Fullstack \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a',
     metaDescription:
       '\u041f\u043e\u0440\u0442\u0444\u043e\u043b\u0438\u043e qwuorty: design + fullstack \u0434\u043b\u044f e-commerce, \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u044b\u0445 \u043f\u0440\u043e\u0435\u043a\u0442\u043e\u0432 \u0438 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u0439.',
     strings: {
@@ -97,12 +97,12 @@ const PROJECTS = [
   {
     slug: 'neformalnost',
     url: 'https://neformalnost.ru/',
-    title: { ru: 'Neformalnost', en: 'Neformalnost' },
-    meta: { ru: 'Bookstore, design plus fullstack', en: 'Bookstore, design plus fullstack' },
+    title: { ru: 'Неформальность', en: 'Neformalnost' },
+    meta: { ru: 'Книжный магазин, дизайн и fullstack', en: 'Bookstore, design plus fullstack' },
     type: { ru: 'E-commerce', en: 'E-commerce' },
     year: '2024',
     result: {
-      ru: 'Checkout flow simplified and SEO crawlability improved.',
+      ru: 'Сокращен путь до покупки и улучшена SEO-индексация.',
       en: 'Checkout path was shortened and SEO crawlability improved.'
     }
   },
@@ -110,23 +110,23 @@ const PROJECTS = [
     slug: 'kitchen-ceremony',
     url: 'https://kitchenceremony.com/',
     title: { ru: 'Kitchen Ceremony', en: 'Kitchen Ceremony' },
-    meta: { ru: 'Spice brand plus digital campaign', en: 'Spice brand plus digital campaign' },
+    meta: { ru: 'Бренд специй и digital-кампания', en: 'Spice brand plus digital campaign' },
     type: { ru: 'Brand commerce', en: 'Brand commerce' },
     year: '2024',
     result: {
-      ru: 'Audience engagement and recognition increased during campaign.',
+      ru: 'Усилены вовлечение аудитории и узнаваемость бренда.',
       en: 'Brand recognition and audience engagement increased during campaign.'
     }
   },
   {
     slug: 'museum-az',
     url: 'https://museum-az.com/',
-    title: { ru: 'Museum AZ', en: 'Museum AZ' },
-    meta: { ru: 'Cultural platform, design plus fullstack', en: 'Cultural platform, design plus fullstack' },
+    title: { ru: 'Музей AZ', en: 'Museum AZ' },
+    meta: { ru: 'Культурная платформа, дизайн и fullstack', en: 'Cultural platform, design plus fullstack' },
     type: { ru: 'Museum platform', en: 'Museum platform' },
     year: '2023',
     result: {
-      ru: 'Exhibition and event navigation became clearer for visitors.',
+      ru: 'Навигация по выставкам и событиям стала понятнее.',
       en: 'Exhibition and event navigation became clearer for visitors.'
     }
   },
@@ -134,11 +134,11 @@ const PROJECTS = [
     slug: 'goat',
     url: 'https://www.goat.com/',
     title: { ru: 'GOAT', en: 'GOAT' },
-    meta: { ru: 'Sneaker marketplace, design plus fullstack', en: 'Sneaker marketplace, design plus fullstack' },
+    meta: { ru: 'Обувной marketplace, дизайн и fullstack', en: 'Sneaker marketplace, design plus fullstack' },
     type: { ru: 'Marketplace', en: 'Marketplace' },
     year: '2023',
     result: {
-      ru: 'Catalog structure and user flow performance improved.',
+      ru: 'Улучшены структура каталога и скорость сценариев.',
       en: 'Catalog structure and user flow performance were improved.'
     }
   },
@@ -146,11 +146,11 @@ const PROJECTS = [
     slug: 'flaner-moscow',
     url: 'https://flanermoscow.ru/',
     title: { ru: 'Flaner Moscow', en: 'Flaner Moscow' },
-    meta: { ru: 'Two-restaurant website, design plus fullstack', en: 'Two-restaurant website, design plus fullstack' },
+    meta: { ru: 'Сайт двух ресторанов, дизайн и fullstack', en: 'Two-restaurant website, design plus fullstack' },
     type: { ru: 'Hospitality', en: 'Hospitality' },
     year: '2024',
     result: {
-      ru: 'Brand feel improved and reservation path became faster.',
+      ru: 'Сайт усилил бренд и упростил путь к бронированию.',
       en: 'Website strengthened branding and simplified reservation path.'
     }
   },
@@ -158,11 +158,11 @@ const PROJECTS = [
     slug: 'unicorngo',
     url: 'https://unicorngo.ru',
     title: { ru: 'Unicorn GO', en: 'Unicorn GO' },
-    meta: { ru: 'Shoe store plus Telegram Mini App', en: 'Shoe store plus Telegram Mini App' },
+    meta: { ru: 'Магазин обуви + Telegram Mini App', en: 'Shoe store plus Telegram Mini App' },
     type: { ru: 'Web + Telegram', en: 'Web plus Telegram' },
     year: '2025',
     result: {
-      ru: 'Unified sales funnel between website and Telegram flow.',
+      ru: 'Собран единый путь продажи между вебом и Telegram.',
       en: 'Unified sales funnel between website and Telegram flow.'
     }
   },
@@ -170,11 +170,11 @@ const PROJECTS = [
     slug: 'amocrm-platrum',
     url: '#about',
     title: { ru: 'AMOcrm x Platrum', en: 'AMOcrm x Platrum' },
-    meta: { ru: 'Deal expenses sync into finance module', en: 'Deal expenses sync into finance module' },
+    meta: { ru: 'Передача расходов из сделки в финансовый модуль', en: 'Deal expenses sync into finance module' },
     type: { ru: 'Automation', en: 'Automation' },
     year: '2025',
     result: {
-      ru: 'Manual work reduced and management accounting became faster.',
+      ru: 'Снижен ручной труд и ускорен управленческий учет.',
       en: 'Manual work reduced and management accounting became faster.'
     }
   }

@@ -1,4 +1,4 @@
-﻿const loader = document.querySelector('.loader');
+const loader = document.querySelector('.loader');
 const loaderBar = document.querySelector('.loader__bar');
 const cursor = document.querySelector('.cursor');
 const revealItems = document.querySelectorAll('[data-reveal]');

@@ -1,4 +1,4 @@
-﻿# Portfolio WOW Skeleton
+# Portfolio WOW Skeleton
 
 Dennis-inspired portfolio skeleton for a Fullstack Developer.
 

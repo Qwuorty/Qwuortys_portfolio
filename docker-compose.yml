@@ -1,4 +1,4 @@
-﻿services:
+services:
   portfolio-wow:
     build: .
     container_name: portfolio-wow

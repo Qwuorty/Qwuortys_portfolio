@@ -1,0 +1,7 @@
+﻿services:
+  portfolio-wow:
+    build: .
+    container_name: portfolio-wow
+    ports:
+      - "127.0.0.1:8088:80"
+    restart: unless-stopped

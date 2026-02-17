@@ -33,6 +33,76 @@ a {
   text-decoration: none;
 }
 
+.lang-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 1002;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 20% 20%, rgba(255, 139, 94, 0.2), transparent 38%),
+    radial-gradient(circle at 80% 80%, rgba(117, 255, 91, 0.22), transparent 42%), #040607;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.lang-gate.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.lang-gate__panel {
+  width: min(92vw, 540px);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(10, 16, 18, 0.88);
+  text-align: center;
+}
+
+.lang-gate__kicker {
+  margin: 0 0 0.35rem;
+  color: var(--accent);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.lang-gate__panel h2 {
+  margin: 0;
+  font-family: "Syne", sans-serif;
+  font-size: clamp(1.5rem, 4vw, 2.2rem);
+}
+
+.lang-gate__panel p {
+  margin: 0.75rem 0 0;
+  color: var(--muted);
+}
+
+.lang-gate__actions {
+  margin-top: 1.2rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.7rem;
+}
+
+.lang-option {
+  min-width: 140px;
+  border: 1px solid rgba(255, 255, 255, 0.26);
+  border-radius: 999px;
+  padding: 0.62rem 0.95rem;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.lang-option:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .loader {
   position: fixed;
   inset: 0;
@@ -118,7 +188,7 @@ a {
   transform: translateX(-50%);
   width: min(calc(100% - 2rem), var(--max));
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto auto auto;
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1rem;
@@ -149,6 +219,24 @@ a {
 
 .nav a:hover {
   color: var(--text);
+}
+
+.lang-switch {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  padding: 0.5rem 0.7rem;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.lang-switch:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .header-cta {
@@ -474,7 +562,7 @@ section {
 
 @media (max-width: 980px) {
   .site-header {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr auto auto;
   }
 
   .nav {
@@ -498,7 +586,7 @@ section {
 @media (max-width: 720px) {
   .site-header {
     top: 0.7rem;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
     row-gap: 0.55rem;
     border-radius: 1rem;
   }

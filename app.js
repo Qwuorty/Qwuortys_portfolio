@@ -467,10 +467,34 @@ const bindCursor = () => {
   let cx = x;
   let cy = y;
 
+  const applyCursorMode = (control) => {
+    if (control && control.closest('.work-link')) {
+      cursor.classList.add('is-active');
+      cursor.classList.remove('is-interactive');
+      return;
+    }
+
+    if (control) {
+      cursor.classList.remove('is-active');
+      cursor.classList.add('is-interactive');
+      return;
+    }
+
+    cursor.classList.remove('is-active');
+    cursor.classList.remove('is-interactive');
+  };
+
+  const syncCursorFromPointer = () => {
+    const hoveredElement = document.elementFromPoint(x, y);
+    const control = hoveredElement ? hoveredElement.closest('a, button') : null;
+    applyCursorMode(control);
+  };
+
   window.addEventListener('mousemove', (event) => {
     x = event.clientX;
     y = event.clientY;
     cursor.classList.add('is-visible');
+    syncCursorFromPointer();
   });
 
   const frame = () => {
@@ -482,32 +506,13 @@ const bindCursor = () => {
 
   frame();
 
-  document.addEventListener('mouseover', (event) => {
-    const control = event.target.closest('a, button');
-    if (!control) {
-      return;
-    }
-
-    cursor.classList.add('is-visible');
-    if (control.closest('.work-link')) {
-      cursor.classList.add('is-active');
-      cursor.classList.remove('is-interactive');
-    } else {
-      cursor.classList.remove('is-active');
-      cursor.classList.add('is-interactive');
-    }
-  });
-
-  document.addEventListener('mouseout', (event) => {
-    if (!event.target.closest('a, button')) {
-      return;
-    }
-
-    if (!event.relatedTarget || !event.relatedTarget.closest('a, button')) {
-      cursor.classList.remove('is-active');
-      cursor.classList.remove('is-interactive');
-    }
-  });
+  window.addEventListener(
+    'scroll',
+    () => {
+      syncCursorFromPointer();
+    },
+    { passive: true }
+  );
 
   window.addEventListener('blur', () => {
     cursor.classList.remove('is-visible');
@@ -634,11 +639,7 @@ const bindWorkPreview = () => {
   };
 
   const syncWorkPreviewFromPointer = () => {
-    if (
-      workHoverPointerX < 0 ||
-      workHoverPointerY < 0 ||
-      !workHoverPreview.classList.contains('is-visible')
-    ) {
+    if (workHoverPointerX < 0 || workHoverPointerY < 0) {
       return;
     }
 
@@ -646,11 +647,14 @@ const bindWorkPreview = () => {
     const hoveredLink = hoveredElement ? hoveredElement.closest('.work-link') : null;
 
     if (hoveredLink) {
+      positionWorkPreview(workHoverPointerX, workHoverPointerY);
       activateWorkLink(hoveredLink);
       return;
     }
 
-    hideWorkPreview();
+    if (workHoverPreview.classList.contains('is-visible')) {
+      hideWorkPreview();
+    }
   };
 
   if (!workPreviewTrackingBound) {

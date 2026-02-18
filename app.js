@@ -228,6 +228,10 @@ let transitionLock = false;
 let revealObserver;
 let activeWorkPreviewIndex = -1;
 let workPreviewHideTimer = 0;
+let activeWorkPreviewLink = null;
+let workHoverPointerX = -1;
+let workHoverPointerY = -1;
+let workPreviewTrackingBound = false;
 
 const detectLanguageFromPath = (pathname = window.location.pathname) => {
   const match = pathname.match(LANGUAGE_PATH_RE);
@@ -558,6 +562,114 @@ const bindWorkPreview = () => {
     return;
   }
 
+  const positionWorkPreview = (clientX, clientY) => {
+    const offsetX = 32;
+    const offsetY = 18;
+    const width = workHoverPreview.offsetWidth || 420;
+    const height = workHoverPreview.offsetHeight || 260;
+
+    const maxX = window.innerWidth - width - 18;
+    const maxY = window.innerHeight - height - 18;
+    const nextX = Math.max(18, Math.min(clientX + offsetX, maxX));
+    const nextY = Math.max(18, Math.min(clientY + offsetY, maxY));
+
+    workHoverPreview.style.left = `${nextX}px`;
+    workHoverPreview.style.top = `${nextY}px`;
+  };
+
+  const clearActiveRow = () => {
+    if (!activeWorkPreviewLink) {
+      return;
+    }
+    const prevRow = activeWorkPreviewLink.closest('.work-row');
+    if (prevRow) {
+      prevRow.classList.remove('is-active');
+    }
+    activeWorkPreviewLink = null;
+  };
+
+  const hideWorkPreview = () => {
+    if (workPreviewHideTimer) {
+      window.clearTimeout(workPreviewHideTimer);
+      workPreviewHideTimer = 0;
+    }
+    clearActiveRow();
+    workList.classList.remove('is-hovering');
+    workHoverPreview.classList.remove('is-visible');
+    activeWorkPreviewIndex = -1;
+  };
+
+  const activateWorkLink = (link) => {
+    if (!link) {
+      return;
+    }
+
+    if (workPreviewHideTimer) {
+      window.clearTimeout(workPreviewHideTimer);
+      workPreviewHideTimer = 0;
+    }
+
+    const previewIndex = Number(link.dataset.previewIndex || -1);
+    if (!Number.isFinite(previewIndex) || previewIndex < 0) {
+      return;
+    }
+
+    if (activeWorkPreviewLink && activeWorkPreviewLink !== link) {
+      const previousRow = activeWorkPreviewLink.closest('.work-row');
+      if (previousRow) {
+        previousRow.classList.remove('is-active');
+      }
+    }
+
+    const row = link.closest('.work-row');
+    if (row) {
+      row.classList.add('is-active');
+    }
+    activeWorkPreviewLink = link;
+    workList.classList.add('is-hovering');
+
+    const shouldJump = !workHoverPreview.classList.contains('is-visible') || activeWorkPreviewIndex < 0;
+    setWorkPreviewIndex(previewIndex, shouldJump);
+    workHoverPreview.classList.add('is-visible');
+  };
+
+  const syncWorkPreviewFromPointer = () => {
+    if (
+      workHoverPointerX < 0 ||
+      workHoverPointerY < 0 ||
+      !workHoverPreview.classList.contains('is-visible')
+    ) {
+      return;
+    }
+
+    const hoveredElement = document.elementFromPoint(workHoverPointerX, workHoverPointerY);
+    const hoveredLink = hoveredElement ? hoveredElement.closest('.work-link') : null;
+
+    if (hoveredLink) {
+      activateWorkLink(hoveredLink);
+      return;
+    }
+
+    hideWorkPreview();
+  };
+
+  if (!workPreviewTrackingBound) {
+    workPreviewTrackingBound = true;
+
+    document.addEventListener('mousemove', (event) => {
+      workHoverPointerX = event.clientX;
+      workHoverPointerY = event.clientY;
+    });
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        syncWorkPreviewFromPointer();
+      },
+      { passive: true }
+    );
+  }
+
   document.querySelectorAll('.work-link').forEach((link) => {
     if (link.dataset.hoverBound === '1') {
       return;
@@ -565,54 +677,25 @@ const bindWorkPreview = () => {
     link.dataset.hoverBound = '1';
 
     link.addEventListener('mouseenter', (event) => {
-      if (workPreviewHideTimer) {
-        window.clearTimeout(workPreviewHideTimer);
-        workPreviewHideTimer = 0;
-      }
-
-      const previewIndex = Number(event.currentTarget.dataset.previewIndex || -1);
-      const row = event.currentTarget.closest('.work-row');
-
-      if (row) {
-        row.classList.add('is-active');
-      }
-      workList.classList.add('is-hovering');
-
-      const shouldJump = !workHoverPreview.classList.contains('is-visible') || activeWorkPreviewIndex < 0;
-      setWorkPreviewIndex(previewIndex, shouldJump);
-
-      workHoverPreview.classList.add('is-visible');
+      workHoverPointerX = event.clientX;
+      workHoverPointerY = event.clientY;
+      activateWorkLink(event.currentTarget);
+      positionWorkPreview(event.clientX, event.clientY);
     });
 
     link.addEventListener('mousemove', (event) => {
-      const offsetX = 32;
-      const offsetY = 18;
-      const width = workHoverPreview.offsetWidth || 420;
-      const height = workHoverPreview.offsetHeight || 260;
-
-      const maxX = window.innerWidth - width - 18;
-      const maxY = window.innerHeight - height - 18;
-      const nextX = Math.max(18, Math.min(event.clientX + offsetX, maxX));
-      const nextY = Math.max(18, Math.min(event.clientY + offsetY, maxY));
-
-      workHoverPreview.style.left = `${nextX}px`;
-      workHoverPreview.style.top = `${nextY}px`;
+      workHoverPointerX = event.clientX;
+      workHoverPointerY = event.clientY;
+      positionWorkPreview(event.clientX, event.clientY);
     });
 
-    link.addEventListener('mouseleave', (event) => {
-      const row = event.currentTarget.closest('.work-row');
-      if (row) {
-        row.classList.remove('is-active');
-      }
-
+    link.addEventListener('mouseleave', () => {
       if (workPreviewHideTimer) {
         window.clearTimeout(workPreviewHideTimer);
       }
 
       workPreviewHideTimer = window.setTimeout(() => {
-        workList.classList.remove('is-hovering');
-        workHoverPreview.classList.remove('is-visible');
-        activeWorkPreviewIndex = -1;
+        syncWorkPreviewFromPointer();
       }, 70);
     });
   });

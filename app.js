@@ -1,6 +1,8 @@
 ﻿const preloader = document.getElementById('preloader');
 const preloaderBar = document.getElementById('preloaderBar');
 const preloaderValue = document.getElementById('preloaderValue');
+const preloaderHeadline = document.getElementById('preloaderHeadline');
+const fontStylesheet = document.getElementById('fontStylesheet');
 const pageTransition = document.getElementById('pageTransition');
 const menuOverlay = document.getElementById('menuOverlay');
 const menuToggle = document.getElementById('menuToggle');
@@ -10,11 +12,10 @@ const workList = document.getElementById('workList');
 const coreList = document.getElementById('coreList');
 const autoList = document.getElementById('autoList');
 const cursor = document.querySelector('.cursor');
+const heroScrollCue = document.querySelector('.hero-scroll-cue');
 const workHoverPreview = document.getElementById('workHoverPreview');
-const workHoverImage = document.getElementById('workHoverImage');
-const workHoverTitle = document.getElementById('workHoverTitle');
-const workHoverType = document.getElementById('workHoverType');
-const workHoverResult = document.getElementById('workHoverResult');
+const workHoverMedia = document.getElementById('workHoverMedia');
+const workHoverStack = document.getElementById('workHoverStack');
 
 const SUPPORTED_LANGUAGES = ['ru', 'en'];
 const DEFAULT_LANGUAGE = 'ru';
@@ -22,23 +23,23 @@ const LANGUAGE_PATH_RE = /^\/(ru|en)(?=\/|$)/;
 
 const UI = {
   ru: {
-    metaTitle: 'qwuorty | Fullstack \u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a',
+    metaTitle: 'Code by Qwuorty',
     metaDescription:
       '\u041f\u043e\u0440\u0442\u0444\u043e\u043b\u0438\u043e qwuorty: design + fullstack \u0434\u043b\u044f e-commerce, \u043a\u0443\u043b\u044c\u0442\u0443\u0440\u043d\u044b\u0445 \u043f\u0440\u043e\u0435\u043a\u0442\u043e\u0432 \u0438 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u0439.',
     strings: {
       'preloader.label': '\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430 \u043f\u043e\u0440\u0442\u0444\u043e\u043b\u0438\u043e',
       'menu.open': '\u041c\u0435\u043d\u044e',
       'menu.close': '\u0417\u0430\u043a\u0440\u044b\u0442\u044c',
+      'header.code': '\u00a9 Code by qwuorty',
       'nav.home': '\u0413\u043b\u0430\u0432\u043d\u0430\u044f',
       'nav.work': '\u041a\u0435\u0439\u0441\u044b',
       'nav.about': '\u041e\u0431\u043e \u043c\u043d\u0435',
       'nav.contact': '\u041a\u043e\u043d\u0442\u0430\u043a\u0442',
-      'hero.kicker': 'Design plus Fullstack',
-      'hero.line1': '\u0421\u043e\u0437\u0434\u0430\u044e \u0441\u0430\u0439\u0442\u044b \u0438 \u0441\u0435\u0440\u0432\u0438\u0441\u044b',
-      'hero.line2': '\u0441 \u043f\u0440\u0435\u043c\u0438\u0443\u043c-\u043f\u043e\u0434\u0430\u0447\u0435\u0439,',
-      'hero.line3': '\u043a\u043e\u0442\u043e\u0440\u044b\u0435 \u0431\u044b\u0441\u0442\u0440\u044b \u0438 \u044d\u0444\u0444\u0435\u043a\u0442\u0438\u0432\u043d\u044b.',
-      'hero.text':
-        '\u041f\u043e\u043b\u043d\u044b\u0439 \u0446\u0438\u043a\u043b: \u043a\u043e\u043d\u0446\u0435\u043f\u0442, UI/UX, frontend, backend, \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438 \u0438 \u0440\u0435\u043b\u0438\u0437.',
+      'hero.location.line1': 'Based in',
+      'hero.location.line2': 'UAE',
+      'hero.role.line1': '\u0420\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a & \u0414\u0438\u0437\u0430\u0439\u043d\u0435\u0440',
+      'hero.role.line2': '',
+      'hero.name': 'Qwuorty',
       'hero.cta.work': '\u0421\u043c\u043e\u0442\u0440\u0435\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442\u044b',
       'hero.cta.contact': '\u041d\u0430\u0447\u0430\u0442\u044c \u043f\u0440\u043e\u0435\u043a\u0442',
       'work.kicker': '\u0418\u0437\u0431\u0440\u0430\u043d\u043d\u044b\u0435 \u043a\u0435\u0439\u0441\u044b',
@@ -48,6 +49,9 @@ const UI = {
       'work.head.year': '\u0413\u043e\u0434',
       'about.kicker': '\u041e\u0431\u043e \u043c\u043d\u0435',
       'about.title': '\u0423\u0441\u043b\u0443\u0433\u0438 \u0438 \u0430\u0432\u0442\u043e\u043c\u0430\u0442\u0438\u0437\u0430\u0446\u0438\u044f',
+      'about.intro.title': '\u0424\u0443\u043b\u043b\u0441\u0442\u0435\u043a-\u0440\u0430\u0437\u0440\u0430\u0431\u043e\u0442\u0447\u0438\u043a \u0434\u043b\u044f \u043f\u0440\u0435\u043c\u0438\u0443\u043c-\u0434\u0438\u0434\u0436\u0438\u0442\u0430\u043b \u043f\u0440\u043e\u0434\u0443\u043a\u0442\u043e\u0432.',
+      'about.intro.text':
+        '\u0421\u043e\u0432\u043c\u0435\u0449\u0430\u044e \u0434\u0438\u0437\u0430\u0439\u043d-\u0432\u0438\u0434\u0435\u043d\u0438\u0435 \u0438 \u0438\u043d\u0436\u0435\u043d\u0435\u0440\u043d\u0443\u044e \u0440\u0435\u0430\u043b\u0438\u0437\u0430\u0446\u0438\u044e, \u0447\u0442\u043e\u0431\u044b \u043a\u043b\u0438\u0435\u043d\u0442 \u043f\u043e\u043b\u0443\u0447\u0430\u043b \u043e\u0434\u0438\u043d \u0446\u0435\u043b\u043e\u0441\u0442\u043d\u044b\u0439 \u0440\u0435\u0437\u0443\u043b\u044c\u0442\u0430\u0442 \u043e\u0442 \u0438\u0434\u0435\u0438 \u0434\u043e \u0440\u0435\u043b\u0438\u0437\u0430.',
       'about.core': '\u041a\u043b\u044e\u0447\u0435\u0432\u044b\u0435 \u0443\u0441\u043b\u0443\u0433\u0438',
       'about.auto': '\u0411\u043e\u0442\u044b \u0438 \u0438\u043d\u0442\u0435\u0433\u0440\u0430\u0446\u0438\u0438',
       'contact.kicker': '\u041a\u043e\u043d\u0442\u0430\u043a\u0442',
@@ -58,22 +62,23 @@ const UI = {
     }
   },
   en: {
-    metaTitle: 'qwuorty | Fullstack Developer',
+    metaTitle: 'Code by Qwuorty',
     metaDescription:
       'Portfolio of qwuorty: design plus fullstack delivery for e-commerce, cultural products and automation systems.',
     strings: {
       'preloader.label': 'Loading portfolio',
       'menu.open': 'Menu',
       'menu.close': 'Close',
+      'header.code': '\u00a9 Code by qwuorty',
       'nav.home': 'Home',
       'nav.work': 'Work',
       'nav.about': 'About',
       'nav.contact': 'Contact',
-      'hero.kicker': 'Design plus Fullstack',
-      'hero.line1': 'I build websites',
-      'hero.line2': 'that feel premium,',
-      'hero.line3': 'perform and convert.',
-      'hero.text': 'End-to-end delivery: concept, interface, frontend, backend, integrations, release.',
+      'hero.location.line1': 'Based in',
+      'hero.location.line2': 'UAE',
+      'hero.role.line1': 'Developer & Designer',
+      'hero.role.line2': '',
+      'hero.name': 'Qwuorty',
       'hero.cta.work': 'View projects',
       'hero.cta.contact': 'Start project',
       'work.kicker': 'Selected Work',
@@ -83,6 +88,9 @@ const UI = {
       'work.head.year': 'Year',
       'about.kicker': 'About',
       'about.title': 'Services and automation',
+      'about.intro.title': 'Fullstack developer focused on high-end digital products.',
+      'about.intro.text':
+        'I combine design vision and engineering execution, so clients get one accountable person from concept to release.',
       'about.core': 'Core services',
       'about.auto': 'Automation and bots',
       'contact.kicker': 'Contact',
@@ -91,6 +99,11 @@ const UI = {
       'footer.top': 'Back to top'
     }
   }
+};
+
+const PRELOADER_CYCLE = {
+  ru: ['qwuorty portfolio', '\u0417\u0430\u0433\u0440\u0443\u0436\u0430\u0435\u043c \u043a\u0435\u0439\u0441\u044b', '\u0413\u043e\u0442\u043e\u0432\u0438\u043c \u0433\u043b\u0430\u0432\u043d\u0443\u044e'],
+  en: ['qwuorty portfolio', 'Loading projects', 'Preparing homepage']
 };
 
 const PROJECTS = [
@@ -212,8 +225,9 @@ const AUTOMATIONS = {
 
 let currentLanguage = DEFAULT_LANGUAGE;
 let transitionLock = false;
-let preloaderProgress = 0;
 let revealObserver;
+let activeWorkPreviewIndex = -1;
+let workPreviewHideTimer = 0;
 
 const detectLanguageFromPath = (pathname = window.location.pathname) => {
   const match = pathname.match(LANGUAGE_PATH_RE);
@@ -260,10 +274,34 @@ const applyStaticTranslations = (lang) => {
   });
 };
 
+const renderWorkPreviewStack = (lang) => {
+  if (!workHoverStack) {
+    return;
+  }
+
+  workHoverStack.innerHTML = PROJECTS.map((project, idx) => {
+    const preview = `/work/${project.slug}/cover.jpg`;
+    const title = project.title[lang];
+    return `
+      <img
+        class="work-hover-stack-image"
+        src="${preview}"
+        alt="${title}"
+        data-preview-index="${idx}"
+        loading="eager"
+        decoding="async"
+        draggable="false"
+      />
+    `;
+  }).join('');
+
+  workHoverStack.style.transform = 'translate3d(0, 0%, 0)';
+  activeWorkPreviewIndex = -1;
+};
+
 const renderProjects = (lang) => {
   const html = PROJECTS.map((project, idx) => {
     const index = String(idx + 1).padStart(2, '0');
-    const preview = `/work/${project.slug}/cover.jpg`;
     const isExternal = !project.url.startsWith('#');
     const externalAttrs = isExternal ? 'target="_blank" rel="noreferrer"' : '';
     return `
@@ -272,10 +310,7 @@ const renderProjects = (lang) => {
           class="work-link"
           href="${project.url}"
           ${externalAttrs}
-          data-preview="${preview}"
-          data-preview-title="${project.title[lang]}"
-          data-preview-type="${project.type[lang]}"
-          data-preview-result="${project.result[lang]}"
+          data-preview-index="${idx}"
         >
           <span class="work-index">${index}</span>
           <div class="work-main">
@@ -291,6 +326,15 @@ const renderProjects = (lang) => {
   }).join('');
 
   workList.innerHTML = html;
+  renderWorkPreviewStack(lang);
+  if (workPreviewHideTimer) {
+    window.clearTimeout(workPreviewHideTimer);
+    workPreviewHideTimer = 0;
+  }
+  workList.classList.remove('is-hovering');
+  if (workHoverPreview) {
+    workHoverPreview.classList.remove('is-visible');
+  }
   bindReveal();
   bindWorkPreview();
 };
@@ -394,10 +438,25 @@ const bindNavigationLinks = () => {
   });
 };
 
-const bindCursor = () => {
-  if (window.matchMedia('(pointer: coarse)').matches) {
+const bindHeroScrollCue = () => {
+  if (!heroScrollCue) {
     return;
   }
+
+  const update = () => {
+    heroScrollCue.classList.toggle('is-hidden', window.scrollY > 22);
+  };
+
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+};
+
+const bindCursor = () => {
+  if (!cursor || window.matchMedia('(pointer: coarse)').matches) {
+    return;
+  }
+
+  document.body.classList.add('has-custom-cursor');
 
   let x = window.innerWidth / 2;
   let y = window.innerHeight / 2;
@@ -407,6 +466,7 @@ const bindCursor = () => {
   window.addEventListener('mousemove', (event) => {
     x = event.clientX;
     y = event.clientY;
+    cursor.classList.add('is-visible');
   });
 
   const frame = () => {
@@ -419,15 +479,36 @@ const bindCursor = () => {
   frame();
 
   document.addEventListener('mouseover', (event) => {
-    if (event.target.closest('a, button')) {
+    const control = event.target.closest('a, button');
+    if (!control) {
+      return;
+    }
+
+    cursor.classList.add('is-visible');
+    if (control.closest('.work-link')) {
       cursor.classList.add('is-active');
+      cursor.classList.remove('is-interactive');
+    } else {
+      cursor.classList.remove('is-active');
+      cursor.classList.add('is-interactive');
     }
   });
 
   document.addEventListener('mouseout', (event) => {
-    if (event.target.closest('a, button')) {
-      cursor.classList.remove('is-active');
+    if (!event.target.closest('a, button')) {
+      return;
     }
+
+    if (!event.relatedTarget || !event.relatedTarget.closest('a, button')) {
+      cursor.classList.remove('is-active');
+      cursor.classList.remove('is-interactive');
+    }
+  });
+
+  window.addEventListener('blur', () => {
+    cursor.classList.remove('is-visible');
+    cursor.classList.remove('is-active');
+    cursor.classList.remove('is-interactive');
   });
 };
 
@@ -451,9 +532,29 @@ const bindMagnetic = () => {
   });
 };
 
+const setWorkPreviewIndex = (index, immediate = false) => {
+  if (!workHoverStack || !Number.isFinite(index) || index < 0) {
+    return;
+  }
+
+  const nextTransform = `translate3d(0, ${index * -100}%, 0)`;
+
+  if (immediate) {
+    const previousTransition = workHoverStack.style.transition;
+    workHoverStack.style.transition = 'none';
+    workHoverStack.style.transform = nextTransform;
+    void workHoverStack.offsetHeight;
+    workHoverStack.style.transition = previousTransition;
+  } else {
+    workHoverStack.style.transform = nextTransform;
+  }
+
+  activeWorkPreviewIndex = index;
+};
+
 const bindWorkPreview = () => {
   const isHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-  if (!isHover) {
+  if (!isHover || !workHoverPreview || !workHoverMedia || !workHoverStack) {
     return;
   }
 
@@ -464,10 +565,12 @@ const bindWorkPreview = () => {
     link.dataset.hoverBound = '1';
 
     link.addEventListener('mouseenter', (event) => {
-      const previewSrc = event.currentTarget.dataset.preview;
-      const previewTitle = event.currentTarget.dataset.previewTitle;
-      const previewType = event.currentTarget.dataset.previewType;
-      const previewResult = event.currentTarget.dataset.previewResult;
+      if (workPreviewHideTimer) {
+        window.clearTimeout(workPreviewHideTimer);
+        workPreviewHideTimer = 0;
+      }
+
+      const previewIndex = Number(event.currentTarget.dataset.previewIndex || -1);
       const row = event.currentTarget.closest('.work-row');
 
       if (row) {
@@ -475,12 +578,9 @@ const bindWorkPreview = () => {
       }
       workList.classList.add('is-hovering');
 
-      workHoverImage.classList.remove('is-hidden');
-      workHoverImage.src = previewSrc;
-      workHoverImage.alt = previewTitle;
-      workHoverTitle.textContent = previewTitle;
-      workHoverType.textContent = previewType || '';
-      workHoverResult.textContent = previewResult || '';
+      const shouldJump = !workHoverPreview.classList.contains('is-visible') || activeWorkPreviewIndex < 0;
+      setWorkPreviewIndex(previewIndex, shouldJump);
+
       workHoverPreview.classList.add('is-visible');
     });
 
@@ -504,47 +604,335 @@ const bindWorkPreview = () => {
       if (row) {
         row.classList.remove('is-active');
       }
-      workList.classList.remove('is-hovering');
-      workHoverPreview.classList.remove('is-visible');
+
+      if (workPreviewHideTimer) {
+        window.clearTimeout(workPreviewHideTimer);
+      }
+
+      workPreviewHideTimer = window.setTimeout(() => {
+        workList.classList.remove('is-hovering');
+        workHoverPreview.classList.remove('is-visible');
+        activeWorkPreviewIndex = -1;
+      }, 70);
     });
   });
-
-  workHoverImage.onload = () => {
-    workHoverImage.classList.remove('is-hidden');
-  };
-
-  workHoverImage.onerror = () => {
-    workHoverImage.classList.add('is-hidden');
-  };
 };
 
-const runPreloader = () => {
+const PRELOAD_TIMEOUT_MS = 3200;
+const REQUIRED_FONT_DESCRIPTORS = [
+  '400 1em "Manrope"',
+  '500 1em "Manrope"',
+  '700 1em "Manrope"',
+  '500 1em "Syne"',
+  '700 1em "Syne"',
+  '800 1em "Syne"'
+];
+
+const collectPreloadAssets = () => {
+  const covers = PROJECTS.map((project) => `/work/${project.slug}/cover.jpg`);
+  return ['/work/profile/portrait.png', ...covers];
+};
+
+const preloadImage = (src) =>
+  new Promise((resolve) => {
+    const image = new Image();
+    image.decoding = 'async';
+    image.onload = () => {
+      if (typeof image.decode === 'function') {
+        image
+          .decode()
+          .catch(() => null)
+          .finally(() => resolve(src));
+        return;
+      }
+      resolve(src);
+    };
+    image.onerror = () => resolve(src);
+    image.src = src;
+  });
+
+const settleWithTimeout = (promise, timeoutMs = PRELOAD_TIMEOUT_MS) =>
+  new Promise((resolve) => {
+    let isDone = false;
+    const finish = () => {
+      if (isDone) {
+        return;
+      }
+      isDone = true;
+      window.clearTimeout(timer);
+      resolve();
+    };
+
+    const timer = window.setTimeout(finish, timeoutMs);
+    Promise.resolve(promise)
+      .catch(() => null)
+      .then(finish);
+  });
+
+const waitForFontStylesheet = () => {
+  if (!fontStylesheet) {
+    return Promise.resolve();
+  }
+
+  const hasLoadedSheet = Array.from(document.styleSheets).some((sheet) => sheet.href === fontStylesheet.href);
+  if (hasLoadedSheet) {
+    return Promise.resolve();
+  }
+
+  return new Promise((resolve) => {
+    const done = () => {
+      fontStylesheet.removeEventListener('load', done);
+      fontStylesheet.removeEventListener('error', done);
+      resolve();
+    };
+
+    fontStylesheet.addEventListener('load', done, { once: true });
+    fontStylesheet.addEventListener('error', done, { once: true });
+  });
+};
+
+const collectFontPreloadTasks = () => {
+  const tasks = [settleWithTimeout(waitForFontStylesheet())];
+
+  if (!document.fonts || typeof document.fonts.load !== 'function') {
+    return tasks;
+  }
+
+  REQUIRED_FONT_DESCRIPTORS.forEach((descriptor) => {
+    tasks.push(settleWithTimeout(document.fonts.load(descriptor, 'qwuorty 0123456789')));
+  });
+
+  tasks.push(settleWithTimeout(document.fonts.ready));
+  return tasks;
+};
+
+const runPreloader = async () => {
+  if (!preloader || !preloaderBar || !preloaderValue) {
+    return;
+  }
+
   document.body.style.overflow = 'hidden';
-  const tick = () => {
-    preloaderProgress += Math.random() * 14 + 5;
-    if (preloaderProgress >= 100) {
-      preloaderProgress = 100;
-      preloaderBar.style.width = '100%';
-      preloaderValue.textContent = '100%';
-      window.setTimeout(() => {
-        preloader.classList.add('is-hidden');
-        document.body.style.overflow = '';
-      }, 260);
+  const startedAt = performance.now();
+  const cycle = PRELOADER_CYCLE[currentLanguage] || PRELOADER_CYCLE[DEFAULT_LANGUAGE];
+  let cycleIndex = 0;
+
+  if (preloaderHeadline && cycle.length > 0) {
+    preloaderHeadline.textContent = cycle[0];
+  }
+
+  const cycleTimer = window.setInterval(() => {
+    if (!preloaderHeadline || cycle.length === 0) {
       return;
     }
+    cycleIndex = (cycleIndex + 1) % cycle.length;
+    preloaderHeadline.textContent = cycle[cycleIndex];
+  }, 560);
 
-    preloaderBar.style.width = `${preloaderProgress.toFixed(1)}%`;
-    preloaderValue.textContent = `${Math.floor(preloaderProgress)}%`;
-    window.setTimeout(tick, 90);
+  const assets = Array.from(new Set(collectPreloadAssets()));
+  const tasks = [...assets.map((src) => preloadImage(src)), ...collectFontPreloadTasks()];
+  let loaded = 0;
+
+  const setProgress = (value) => {
+    const safeValue = Math.max(0, Math.min(100, value));
+    preloaderBar.style.width = `${safeValue}%`;
+    preloaderValue.textContent = `${Math.round(safeValue)}%`;
   };
 
-  tick();
+  setProgress(0);
+  if (tasks.length > 0) {
+    await Promise.all(
+      tasks.map((task) =>
+        Promise.resolve(task)
+          .catch(() => null)
+          .then(() => {
+            loaded += 1;
+            setProgress((loaded / tasks.length) * 100);
+          })
+      )
+    );
+  }
+
+  setProgress(100);
+
+  const elapsed = performance.now() - startedAt;
+  if (elapsed < 950) {
+    await new Promise((resolve) => window.setTimeout(resolve, 950 - elapsed));
+  }
+
+  window.clearInterval(cycleTimer);
+  preloader.classList.add('is-hidden');
+  document.body.style.overflow = '';
 };
 
 const setYear = () => {
   const year = document.getElementById('year');
   if (year) {
     year.textContent = String(new Date().getFullYear());
+  }
+};
+
+const initLocationGlobe = () => {
+  const canvas = document.querySelector('.hero-location__globe-canvas');
+  if (!canvas) {
+    return;
+  }
+
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    return;
+  }
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const latitudes = [-54, -32, -10, 10, 32, 54];
+  const longitudes = Array.from({ length: 12 }, (_, idx) => -150 + idx * 30);
+  const segmentStep = 7;
+  const baseTiltX = 0;
+  const tiltSwingAmplitude = 0.58;
+  const tiltZ = 0;
+  const maxDeviceRatio = 2;
+  const frontDepthEpsilon = 0;
+
+  let rafId = 0;
+  let width = 0;
+  let height = 0;
+  let centerX = 0;
+  let centerY = 0;
+  let centerYBase = 0;
+  let radius = 0;
+
+  const resize = () => {
+    const rect = canvas.getBoundingClientRect();
+    if (!rect.width || !rect.height) {
+      return;
+    }
+
+    const dpr = Math.min(window.devicePixelRatio || 1, maxDeviceRatio);
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    width = rect.width;
+    height = rect.height;
+    centerX = width / 2;
+    centerY = height / 2;
+    centerYBase = centerY;
+    radius = Math.min(width, height) * 0.36;
+  };
+
+  const project = (latDeg, lonDeg, spinY, tiltX) => {
+    const lat = (latDeg * Math.PI) / 180;
+    const lon = (lonDeg * Math.PI) / 180;
+
+    const x = Math.cos(lat) * Math.sin(lon) * radius;
+    const y = Math.sin(lat) * radius;
+    const z = Math.cos(lat) * Math.cos(lon) * radius;
+
+    const cosY = Math.cos(spinY);
+    const sinY = Math.sin(spinY);
+    let xr = x * cosY + z * sinY;
+    let yr = y;
+    let zr = -x * sinY + z * cosY;
+
+    const cosX = Math.cos(tiltX);
+    const sinX = Math.sin(tiltX);
+    const yTilt = yr * cosX - zr * sinX;
+    const zTilt = yr * sinX + zr * cosX;
+    yr = yTilt;
+    zr = zTilt;
+
+    const cosZ = Math.cos(tiltZ);
+    const sinZ = Math.sin(tiltZ);
+    const xTwist = xr * cosZ - yr * sinZ;
+    const yTwist = xr * sinZ + yr * cosZ;
+    xr = xTwist;
+    yr = yTwist;
+
+    return { x: centerX + xr, y: centerY + yr, z: zr };
+  };
+
+  const drawFrontSegments = (points) => {
+    for (let i = 1; i < points.length; i += 1) {
+      const a = points[i - 1];
+      const b = points[i];
+      if (a.z <= frontDepthEpsilon && b.z <= frontDepthEpsilon) {
+        continue;
+      }
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+    }
+  };
+
+  const drawCurves = (spinY, tiltX) => {
+    const buildLatitude = (lat) => {
+      const points = [];
+      for (let lon = -180; lon <= 180; lon += segmentStep) {
+        points.push(project(lat, lon, spinY, tiltX));
+      }
+      return points;
+    };
+
+    const buildLongitude = (lon) => {
+      const points = [];
+      for (let lat = -90; lat <= 90; lat += segmentStep) {
+        points.push(project(lat, lon, spinY, tiltX));
+      }
+      return points;
+    };
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = Math.max(1.04, Math.min(width, height) * 0.0145);
+
+    ctx.strokeStyle = 'rgba(28, 33, 38, 0.42)';
+    latitudes.forEach((lat) => drawFrontSegments(buildLatitude(lat)));
+
+    ctx.strokeStyle = 'rgba(8, 11, 14, 0.92)';
+    longitudes.forEach((lon) => drawFrontSegments(buildLongitude(lon)));
+  };
+
+  const drawFrame = (time) => {
+    if (!width || !height) {
+      resize();
+    }
+    if (!width || !height) {
+      rafId = requestAnimationFrame(drawFrame);
+      return;
+    }
+
+    const spinY = reducedMotion.matches ? 0.32 : time * 0.0003;
+    const rockPhase = reducedMotion.matches ? 0 : time * 0.0018;
+    const tiltX = baseTiltX + Math.sin(rockPhase - Math.PI / 2) * tiltSwingAmplitude;
+    const verticalBob = reducedMotion.matches ? 0 : Math.sin(rockPhase) * radius * 0.08;
+    centerY = centerYBase + verticalBob;
+    ctx.clearRect(0, 0, width, height);
+
+    drawCurves(spinY, tiltX);
+
+    ctx.strokeStyle = 'rgba(8, 11, 14, 0.96)';
+    ctx.lineWidth = Math.max(1.55, Math.min(width, height) * 0.022);
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.stroke();
+
+    if (!reducedMotion.matches) {
+      rafId = requestAnimationFrame(drawFrame);
+    }
+  };
+
+  const start = () => {
+    cancelAnimationFrame(rafId);
+    resize();
+    drawFrame(performance.now());
+  };
+
+  start();
+  window.addEventListener('resize', start);
+  if (typeof reducedMotion.addEventListener === 'function') {
+    reducedMotion.addEventListener('change', start);
+  } else if (typeof reducedMotion.addListener === 'function') {
+    reducedMotion.addListener(start);
   }
 };
 
@@ -560,7 +948,9 @@ const resolveInitialLanguage = () => {
 bindNavigationLinks();
 bindCursor();
 bindMagnetic();
+bindHeroScrollCue();
 setYear();
+initLocationGlobe();
 
 const initialLanguage = resolveInitialLanguage();
 applyLanguage(initialLanguage, true);
@@ -586,4 +976,5 @@ window.addEventListener('popstate', () => {
   const lang = detectLanguageFromPath();
   applyLanguage(lang || DEFAULT_LANGUAGE, true);
 });
+
 

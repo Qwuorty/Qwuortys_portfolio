@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>qwuorty | Fullstack Developer</title>
+    <title>Code by Qwuorty</title>
     <meta
       name="description"
       content="Portfolio of qwuorty: design plus fullstack delivery for e-commerce, culture and automation products."
@@ -11,15 +11,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      id="fontStylesheet"
       href="https://fonts.googleapis.com/css2?family=Syne:wght@500;700;800&family=Manrope:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="icon" type="image/png" href="/work/profile/photo_circle.png" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <div class="preloader" id="preloader" aria-hidden="true">
       <div class="preloader__inner">
         <p class="preloader__label" data-i18n="preloader.label">Loading portfolio</p>
+        <p class="preloader__headline" id="preloaderHeadline">qwuorty portfolio</p>
         <p class="preloader__value" id="preloaderValue">0%</p>
         <div class="preloader__track"><div class="preloader__bar" id="preloaderBar"></div></div>
       </div>
@@ -43,11 +46,16 @@
       </div>
     </div>
 
-    <div class="cursor" aria-hidden="true"></div>
+    <div class="cursor" aria-hidden="true"><span>View</span></div>
     <div class="grain" aria-hidden="true"></div>
 
     <header class="site-header">
-      <a class="brand" href="#home" data-nav-link>QWUORTY</a>
+      <a class="brand" href="#home" data-nav-link data-i18n="header.code">&copy; Code by qwuorty</a>
+      <nav class="header-nav">
+        <a href="#work" data-nav-link data-i18n="nav.work">Work</a>
+        <a href="#about" data-nav-link data-i18n="nav.about">About</a>
+        <a href="#contact" data-nav-link data-i18n="nav.contact">Contact</a>
+      </nav>
       <div class="header-actions">
         <button id="langSwitch" class="lang-switch" type="button" aria-label="Switch language">EN</button>
         <button id="menuToggle" class="menu-toggle" type="button" data-i18n="menu.open">Menu</button>
@@ -56,16 +64,35 @@
 
     <main>
       <section class="hero" id="home">
-        <p class="hero__kicker" data-reveal data-i18n="hero.kicker">Design plus Fullstack</p>
-        <h1 class="hero__title" data-reveal>
-          <span data-i18n="hero.line1">I build websites</span>
-          <span data-i18n="hero.line2">that feel premium,</span>
-          <span data-i18n="hero.line3">perform and convert.</span>
+        <figure class="hero-photo" data-reveal>
+          <img src="/work/profile/portrait.png" alt="qwuorty portrait" />
+        </figure>
+
+        <div class="hero-location" data-reveal>
+          <div class="hero-location__text">
+            <p data-i18n="hero.location.line1">Based in</p>
+            <p data-i18n="hero.location.line2">UAE</p>
+          </div>
+          <span class="hero-location__icon" aria-hidden="true">
+            <canvas class="hero-location__globe-canvas" width="96" height="96"></canvas>
+          </span>
+        </div>
+
+        <div class="hero-role" data-reveal>
+          <span class="hero-role__arrow" aria-hidden="true">&#8600;</span>
+          <p data-i18n="hero.role.line1">Разработчик &amp; Дизайнер</p>
+        </div>
+        <a class="hero-scroll-cue" href="#work" data-nav-link aria-label="Scroll to projects">
+          <span class="hero-scroll-cue__line" aria-hidden="true"></span>
+          <span class="hero-scroll-cue__tip" aria-hidden="true"></span>
+        </a>
+
+        <h1 class="hero-name" data-reveal>
+          <span data-i18n="hero.name">Qwuorty</span>
+          <span class="hero-name__dash" aria-hidden="true">&mdash;</span>
         </h1>
-        <p class="hero__text" data-reveal data-i18n="hero.text">
-          End-to-end delivery: concept, interface, frontend, backend, integrations, release.
-        </p>
-        <div class="hero__actions" data-reveal>
+
+        <div class="hero-mobile-cta" data-reveal>
           <a class="btn btn--solid magnetic" href="#work" data-nav-link data-i18n="hero.cta.work">View projects</a>
           <a class="btn btn--ghost magnetic" href="#contact" data-nav-link data-i18n="hero.cta.contact">Start project</a>
         </div>
@@ -83,11 +110,8 @@
         </div>
         <div class="work-list" id="workList"></div>
         <div class="work-hover-preview" id="workHoverPreview" aria-hidden="true">
-          <img id="workHoverImage" alt="Project preview" />
-          <div class="work-hover-meta">
-            <p id="workHoverTitle">Project</p>
-            <p id="workHoverType">Type</p>
-            <p id="workHoverResult">Result</p>
+          <div class="work-hover-media" id="workHoverMedia">
+            <div class="work-hover-stack" id="workHoverStack" aria-hidden="true"></div>
           </div>
         </div>
       </section>
@@ -97,15 +121,26 @@
           <p class="section-kicker" data-i18n="about.kicker">About</p>
           <h2 data-i18n="about.title">Services and automation</h2>
         </div>
-        <div class="about-grid">
-          <article class="about-card" data-reveal>
-            <h3 data-i18n="about.core">Core services</h3>
-            <ul id="coreList" class="about-list"></ul>
-          </article>
-          <article class="about-card" data-reveal>
-            <h3 data-i18n="about.auto">Automation and bots</h3>
-            <ul id="autoList" class="about-list"></ul>
-          </article>
+        <div class="about-layout">
+          <div class="about-content">
+            <article class="about-intro" data-reveal>
+              <p class="about-name">qwuorty</p>
+              <h3 data-i18n="about.intro.title">Fullstack developer focused on high-end digital products.</h3>
+              <p data-i18n="about.intro.text">
+                I combine design vision and engineering execution, so clients get one accountable person from concept to release.
+              </p>
+            </article>
+            <div class="about-grid">
+              <article class="about-card" data-reveal>
+                <h3 data-i18n="about.core">Core services</h3>
+                <ul id="coreList" class="about-list"></ul>
+              </article>
+              <article class="about-card" data-reveal>
+                <h3 data-i18n="about.auto">Automation and bots</h3>
+                <ul id="autoList" class="about-list"></ul>
+              </article>
+            </div>
+          </div>
         </div>
       </section>
 
